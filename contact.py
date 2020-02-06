@@ -5,6 +5,7 @@ import numpy as np
 import scipy.io
 
 physicsClient = p.connect(p.GUI)
+p.configureDebugVisualizer(p.COV_ENABLE_RENDERING, 0)
 p.setAdditionalSearchPath(pybullet_data.getDataPath())
 
 p.resetSimulation(p.RESET_USE_DEFORMABLE_WORLD)
@@ -41,6 +42,7 @@ p.changeVisualShape(botId, -1, rgbaColor=[0, 0, 1, 0.5])
 #p.setPhysicsEngineParameter(sparseSdfVoxelSize=0.025)
 p.setRealTimeSimulation(0)
 p.setGravity(0, 0, 10)
+p.configureDebugVisualizer(p.COV_ENABLE_RENDERING, 1)
 
 debug_lines = []
 for i in range(200):

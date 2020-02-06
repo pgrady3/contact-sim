@@ -20,11 +20,16 @@ contForceZ = mat_content['contForceZ']
 
 pt = np.stack((x, y, z)).T
 contact_pt = np.stack((contX, contY, contZ)).T
-contact_force = np.stack((contForceX, contForceY, contForceZ)).T
+contact_force_3d = np.stack((contForceX, contForceY, contForceZ)).T
+contact_force = np.linalg.norm(contact_force_3d, axis=1)
+
+max_force = contact_force.max()
 
 p.setRealTimeSimulation(0)
 
-sphere_id = p.createVisualShape(p.GEOM_SPHERE, radius=0.05, rgbaColor=[1, 0, 0, 1])
+sphere_red = p.createVisualShape(p.GEOM_SPHERE, radius=0.03, rgbaColor=[1, 0, 0, 1])
+sphere_orange = p.createVisualShape(p.GEOM_SPHERE, radius=0.03, rgbaColor=[1, 0.5, 0, 1])
+sphere_yellow = p.createVisualShape(p.GEOM_SPHERE, radius=0.03, rgbaColor=[1, 1, 0, 1])
 
 
 debug_lines = []
@@ -37,7 +42,12 @@ for i in range(len(contX)):
     #print(pt[i, :], pt[i+1, :])
     #line_id = p.addUserDebugLine(contact_pt[i, :], contact_pt[i, :] + contact_force[i, :] * 0.01, lineColorRGB=[1, 0, 0], lineWidth=10)
     #debug_lines.append(line_id)
-    p.createMultiBody(baseMass=0, baseVisualShapeIndex=sphere_id, basePosition=contact_pt[i, :])
+    if contact_force[i] > 0.5 * max_force:
+        p.createMultiBody(baseMass=0, baseVisualShapeIndex=sphere_red, basePosition=contact_pt[i, :])
+    elif contact_force[i] > 0.2 * max_force:
+        p.createMultiBody(baseMass=0, baseVisualShapeIndex=sphere_orange, basePosition=contact_pt[i, :])
+    else:
+        p.createMultiBody(baseMass=0, baseVisualShapeIndex=sphere_yellow, basePosition=contact_pt[i, :])
 
 p.configureDebugVisualizer(p.COV_ENABLE_RENDERING, 1)
 sim_count = 0
