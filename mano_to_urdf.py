@@ -5,6 +5,7 @@ import matplotlib.pyplot as plt
 from mpl_toolkits.mplot3d import Axes3D
 from scipy.stats import mode
 import trimesh
+import mesh_repair
 
 # Load MANO model (here we load the right hand model)
 try:
@@ -29,18 +30,27 @@ face_to_joint, _ = mode(face_node_to_joint, axis=1) # Foreach face, find stronge
 
 joints3D = np.array(m.J_transformed).reshape((-1, 3))
 
+# trimesh.util.attach_to_log() # Gets verbose trimesh output
+# 0 is palm, 1-3 index, 4-6 middle, 7-9 ring, 10-12 pinky, 13-15 thumb
 
 for idx in set(vertex_to_joint):
+#for idx in [3, 6, 9, 12, 15]: # Fingertips only
   print("Plotting joint", idx)
 
   face_mask = face_to_joint == idx
   faces_in_joint = np.where(face_mask)[0]
+  joint_faces = faces[faces_in_joint, :]
 
+  mesh = trimesh.Trimesh(vertices=vertices, faces=joint_faces)
+  wtight = mesh_repair.fill_holes(mesh)
+  print("Trying to fix. Is now watertight:", wtight)
+  #mesh.show()
+  mesh.export('mesh/joint_' + str(idx) + '.stl')
 
   fig = plt.figure()
   ax = fig.add_subplot(111, projection='3d')
-  ax.scatter(joints3D[:, 0], joints3D[:, 1], joints3D[:, 2], color='b') # Plot joints
-  ax.plot_trisurf(vertices[:, 0], vertices[:, 1], vertices[:, 2], triangles=faces[faces_in_joint, :], linewidth=0.2, antialiased=True)
+  #ax.scatter(joints3D[:, 0], joints3D[:, 1], joints3D[:, 2], color='b') # Plot joints
+  ax.plot_trisurf(vertices[:, 0], vertices[:, 1], vertices[:, 2], triangles=joint_faces, linewidth=0.2, antialiased=True)
   ax.set_aspect('equal', 'box')
-  plt.show()
+  #plt.show()
 
