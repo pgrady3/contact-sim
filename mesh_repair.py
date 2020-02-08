@@ -231,7 +231,7 @@ def fill_holes(mesh):
 
         # Attempt aggressive mesh reconstruction by creating a new vertex in the middle, and linking all edges to this
         if len(hole > 4):
-            print("Attempting aggressive hole filling")
+            #print("Attempting aggressive hole filling")
             #print(len(hole))
             hole_edge_pos = vertices[hole, :]
             hole_center = np.mean(hole_edge_pos, axis=0)
