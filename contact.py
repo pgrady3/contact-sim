@@ -15,22 +15,24 @@ softId = p.loadSoftBody("/home/patrick/contact/bullet3/data/tube.vtk", [0, 0, 0]
                       springElasticStiffness=50, springDampingStiffness=5, springBendingStiffness=5, 
                       useMassSpring=1, useBendingSprings=1, collisionMargin=0.05)
 
-cubeStartPos = [-0.1, 0, 0.6]
-cubeStartOrientation = p.getQuaternionFromEuler([0, 1, 0])
+cubeStartPos = [-0.7, 1.6, 0.7]
+cubeStartOrientation = p.getQuaternionFromEuler([1, 0, 1.5])
 #botId = p.loadURDF("biped/biped2d_pybullet.urdf", cubeStartPos, cubeStartOrientation)
 #botId = p.loadURDF("humanoid.urdf", cubeStartPos, cubeStartOrientation)
 #botId = p.loadURDF("/home/patrick/soft/GraspIt2URDF/urdf/HumanHand20DOF.urdf", cubeStartPos, cubeStartOrientation, globalScaling=5)
-botId = p.loadURDF("/home/patrick/contact/allegro_hand_ros/allegro_hand_description/allegro_hand_description_left.urdf", cubeStartPos, cubeStartOrientation, globalScaling=8)
+botId = p.loadURDF("/home/patrick/contact/contact-sim/urdf/hand.urdf", cubeStartPos, cubeStartOrientation, globalScaling=15)
 
 velo_joint = [0, 1, 1, 1, 0, # Pinky 
               0, 1, 1, 1, 0, # Middle
               0, 1, 1, 1, 0, # Index
               3, 0, 0, 1, 0] # Thumb
 
+velo_joint = np.ones(15)
+
 for i in range(0, p.getNumJoints(botId)):
   p.changeDynamics(botId, i, mass=0.1)
   p.changeVisualShape(botId, i, rgbaColor=[0, 0, 1, 0.5])
-  p.setJointMotorControl2(bodyUniqueId=botId, jointIndex=i, controlMode=p.VELOCITY_CONTROL, targetVelocity = velo_joint[i]*1, force = 10)
+  p.setJointMotorControl2(bodyUniqueId=botId, jointIndex=i, controlMode=p.VELOCITY_CONTROL, targetVelocity = velo_joint[i]*0.5, force = 10)
   print(i, p.getJointInfo(botId, i))
 
 

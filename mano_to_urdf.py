@@ -70,12 +70,12 @@ jointsPos = joints_cum_tform[:, 0:3, 3] # Get translation element from transform
 
 for idx in set(vertex_to_joint):
 #for idx in [3, 6, 9, 12, 15]: # Fingertips only
-  print('Joint, pos', idx, jointsPos[idx, :])
-  print('fwd XYZ rpy', T2xyzrpy(tform_relative[idx, :, :]))
-  print('inv XYZ rpy', T2xyzrpy(np.linalg.inv(tform_relative[idx, :, :])))
+  print('Joint, fwd, invglo', idx)
+  print(T2xyzrpy(tform_relative[idx, :, :]))
+  #print('inv XYZ rpy', T2xyzrpy(np.linalg.inv(tform_relative[idx, :, :])))
   #print('a   XYZ rpy', T2xyzrpy(np.array(m.A[:, :, idx])))
-  print('glo XYZ rpy', T2xyzrpy(np.array(m.A_global[idx])))
-  print('invglo XYZ rpy', T2xyzrpy(np.linalg.inv(m.A_global[idx])))
+  #print('glo XYZ rpy', T2xyzrpy(np.array(m.A_global[idx])))
+  print(T2xyzrpy(np.linalg.inv(m.A_global[idx])))
   #print('cum XYZ rpy', T2xyzrpy(joints_cum_tform[idx, :, :]))
 
   face_mask = face_to_joint == idx
