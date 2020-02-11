@@ -1,16 +1,23 @@
-import pybullet as p
-import pybullet_data
 from time import sleep
 import numpy as np
 import scipy.io
+import trimesh
 
-physicsClient = p.connect(p.GUI)
-p.configureDebugVisualizer(p.COV_ENABLE_RENDERING, 0)
 
 mat_content = scipy.io.loadmat('map.mat', squeeze_me=True)
-x = mat_content['x']
-y = mat_content['y']
-z = mat_content['z']
+x0 = mat_content['x0']
+y0 = mat_content['y0']
+z0 = mat_content['z0']
+x1 = mat_content['x1']
+y1 = mat_content['y1']
+z1 = mat_content['z1']
+x2 = mat_content['x2']
+y2 = mat_content['y2']
+z2 = mat_content['z2']
+
+x = np.stack((x0, x1, x2), axis=1).flatten()
+y = np.stack((y0, y1, y2), axis=1).flatten()
+z = np.stack((z0, z1, z2), axis=1).flatten()
 contX = mat_content['contX']
 contY = mat_content['contY']
 contZ = mat_content['contZ']
@@ -25,35 +32,18 @@ contact_force = np.linalg.norm(contact_force_3d, axis=1)
 
 max_force = contact_force.max()
 
-p.setRealTimeSimulation(0)
+faces = np.arange(x.shape[0]).reshape(-1, 3)
+mesh = trimesh.Trimesh(vertices=pt, faces=faces, process=False)
 
-sphere_red = p.createVisualShape(p.GEOM_SPHERE, radius=0.03, rgbaColor=[1, 0, 0, 1])
-sphere_orange = p.createVisualShape(p.GEOM_SPHERE, radius=0.03, rgbaColor=[1, 0.5, 0, 1])
-sphere_yellow = p.createVisualShape(p.GEOM_SPHERE, radius=0.03, rgbaColor=[1, 1, 0, 1])
+for idx, v in enumerate(mesh.vertices):
+    base_color = [0, 0, 100, 255]
+    
+    dist_to_contact = np.linalg.norm(v - contact_pt, axis=1)
+    min_idx = np.argmin(dist_to_contact)
+    if dist_to_contact[min_idx] < 0.0001:
+        norm_force = np.power(contact_force[min_idx] / max_force, 0.2)
+        base_color[1] = int(norm_force * 255)
+        
+    mesh.visual.vertex_colors[idx] = base_color
 
-
-debug_lines = []
-for i in range(len(x) - 1):
-    #print(pt[i, :], pt[i+1, :])
-    line_id = p.addUserDebugLine(pt[i, :], pt[i+1, :])
-    debug_lines.append(line_id)
-
-for i in range(len(contX)):
-    #print(pt[i, :], pt[i+1, :])
-    #line_id = p.addUserDebugLine(contact_pt[i, :], contact_pt[i, :] + contact_force[i, :] * 0.01, lineColorRGB=[1, 0, 0], lineWidth=10)
-    #debug_lines.append(line_id)
-    if contact_force[i] > 0.5 * max_force:
-        p.createMultiBody(baseMass=0, baseVisualShapeIndex=sphere_red, basePosition=contact_pt[i, :])
-    elif contact_force[i] > 0.2 * max_force:
-        p.createMultiBody(baseMass=0, baseVisualShapeIndex=sphere_orange, basePosition=contact_pt[i, :])
-    else:
-        p.createMultiBody(baseMass=0, baseVisualShapeIndex=sphere_yellow, basePosition=contact_pt[i, :])
-
-p.configureDebugVisualizer(p.COV_ENABLE_RENDERING, 1)
-sim_count = 0
-while p.isConnected():
-    #debug_lines[i] = p.addUserDebugLine(pt, pt + contact_force[i, :]*0.01, lineWidth=5, replaceItemUniqueId=debug_lines[i])
-
-    p.stepSimulation()
-    sleep(1./240.)
-    sim_count += 1
+mesh.show()
