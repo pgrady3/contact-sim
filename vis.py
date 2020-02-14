@@ -36,7 +36,7 @@ faces = np.arange(x.shape[0]).reshape(-1, 3)
 mesh = trimesh.Trimesh(vertices=pt, faces=faces, process=False)
 
 for idx, v in enumerate(mesh.vertices):
-    base_color = [0, 0, 100, 255]
+    base_color = [255, 0, 100, 255]
     
     dist_to_contact = np.linalg.norm(v - contact_pt, axis=1)
     min_idx = np.argmin(dist_to_contact)
@@ -45,5 +45,7 @@ for idx, v in enumerate(mesh.vertices):
         base_color[1] = int(norm_force * 255)
         
     mesh.visual.vertex_colors[idx] = base_color
+
+print(contact_pt)
 
 mesh.show()

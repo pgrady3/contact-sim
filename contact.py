@@ -16,7 +16,7 @@ softId = p.loadSoftBody("/home/patrick/contact/bullet3/data/tube.vtk", [0, 0, 0]
                       springElasticStiffness=0.5, springDampingStiffness=0.5, springBendingStiffness=0.5, 
                       useMassSpring=1, useBendingSprings=1, collisionMargin=0.01)
 
-cubeStartPos = [-0.7, 1.6, 0.7]
+cubeStartPos = [-0.7, 1.6, 2.7]
 cubeStartOrientation = p.getQuaternionFromEuler([1, 0, 1.5])
 #botId = p.loadURDF("biped/biped2d_pybullet.urdf", cubeStartPos, cubeStartOrientation)
 #botId = p.loadURDF("humanoid.urdf", cubeStartPos, cubeStartOrientation)
@@ -52,6 +52,16 @@ p.configureDebugVisualizer(p.COV_ENABLE_RENDERING, 1)
 #     line_id = p.addUserDebugLine([0,0,0], [0,0,0])
 #     debug_lines.append(line_id)
 
+def save_model(filename):
+    print('Saving')
+
+    softPos, softRot = p.getBasePositionAndOrientation(softId)
+    x0, y0, z0, x1, y1, z1, x2, y2, z2, contX, contY, contZ, contForceX, contForceY, contForceZ = p.getSoftBodyData(softId)
+    contact_pt = np.stack((contX, contY, contZ)).T
+    contact_force = np.stack((contForceX, contForceY, contForceZ)).T
+    save_dict = {'pos':softPos, 'rot':softRot, 'x0':x0,'y0':y0,'z0':z0,'x1':x1,'y1':y1,'z1':z1,'x2':x2,'y2':y2,'z2':z2, 'contX':contX, 'contY':contY, 'contZ':contZ, 'contForceX':contForceX, 'contForceY':contForceY, 'contForceZ':contForceZ}
+    scipy.io.savemat(filename, save_dict)
+
 sim_count = 0
 last_time = time.time()
 
@@ -69,18 +79,17 @@ while p.isConnected():
   #     debug_lines[i] = p.addUserDebugLine([0,0,0], [0,0,0], replaceItemUniqueId=debug_lines[i])
 
   botPos, botOrn = p.getBasePositionAndOrientation(botId)
+
   if sim_count < 200:
     p.applyExternalForce(botId, -1, [5, 0, -50], botPos, flags=p.WORLD_FRAME)
 
   save_key = ord('z')
   keys = p.getKeyboardEvents()
   if save_key in keys and keys[save_key]&p.KEY_WAS_TRIGGERED:
-    print('Saving')
-    x0, y0, z0, x1, y1, z1, x2, y2, z2, contX, contY, contZ, contForceX, contForceY, contForceZ = p.getSoftBodyData(softId)
-    contact_pt = np.stack((contX, contY, contZ)).T
-    contact_force = np.stack((contForceX, contForceY, contForceZ)).T
-    save_dict = {'x0':x0,'y0':y0,'z0':z0,'x1':x1,'y1':y1,'z1':z1,'x2':x2,'y2':y2,'z2':z2, 'contX':contX, 'contY':contY, 'contZ':contZ, 'contForceX':contForceX, 'contForceY':contForceY, 'contForceZ':contForceZ}
-    scipy.io.savemat('map.mat', save_dict)
+    save_model('deformed.mat')
+
+  if sim_count == 2:
+    save_model('orig.mat')
 
 
   p.stepSimulation()

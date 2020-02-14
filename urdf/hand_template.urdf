@@ -1,0 +1,384 @@
+<?xml version="1.0"?>
+<robot name="visual">
+
+  <material name="blue">
+    <color rgba="0 0 0.8 1"/>
+  </material>
+  <material name="black">
+    <color rgba="0 0 0 1"/>
+  </material>
+  <material name="white">
+    <color rgba="1 1 1 1"/>
+  </material>
+
+  <link name="base_link">
+    <visual>
+      <geometry>
+        <mesh filename="$J0_FILE" scale="1 1 1"/>
+      </geometry>
+      <origin $J0_INVGLO/> <!-- inverse global -->
+      <material name="blue"/>
+    </visual>
+    <collision>
+      <geometry>
+        <mesh filename="$J0_FILE" scale="1 1 1"/>
+      </geometry>
+      <origin $J0_INVGLO/> <!-- inverse global -->
+    </collision>
+  </link>
+
+  <!-- INDEX FINGER ************************************************************************************** -->
+
+  <joint name="palm_to_index_1" type="revolute">
+    <parent link="base_link"/>
+    <child link="index_1"/>
+    <limit effort="1000.0" lower="-1" upper="1" velocity="0.5"/>
+    <origin $J1_FWDREL/> <!-- fwd relative-->
+    <axis xyz="0 0 1"/>
+  </joint>
+
+  <link name="index_1">
+    <visual>
+      <geometry>
+        <mesh filename="$J1_FILE" scale="1 1 1"/>
+      </geometry>
+      <origin $J1_INVGLO/> <!-- inverse global -->
+    </visual>
+    <collision>
+      <geometry>
+        <mesh filename="$J1_FILE" scale="1 1 1"/>
+      </geometry>
+      <origin $J1_INVGLO/> <!-- inverse global -->
+    </collision>
+  </link>
+
+  <joint name="index_1_to_index_2" type="revolute">
+    <parent link="index_1"/>
+    <child link="index_2"/>
+    <limit effort="1000.0" lower="-1" upper="1" velocity="0.5"/>
+    <origin $J2_FWDREL/> <!-- fwd relative-->
+    <axis xyz="0 0 1"/>
+  </joint>
+
+  <link name="index_2">
+    <visual>
+      <geometry>
+        <mesh filename="$J2_FILE" scale="1 1 1"/>
+      </geometry>
+      <origin $J2_INVGLO/> <!-- inverse global -->
+    </visual>
+    <collision>
+      <geometry>
+        <mesh filename="$J2_FILE" scale="1 1 1"/>
+      </geometry>
+      <origin $J2_INVGLO/> <!-- inverse global -->
+    </collision>
+  </link>
+
+  <joint name="index_2_to_index_3" type="revolute">
+    <parent link="index_2"/>
+    <child link="index_3"/>
+    <limit effort="1000.0" lower="-1" upper="1" velocity="0.5"/>
+    <origin $J3_FWDREL/> <!-- fwd relative-->
+    <axis xyz="0 0 1"/>
+  </joint>
+
+  <link name="index_3">
+    <visual>
+      <geometry>
+        <mesh filename="$J3_FILE" scale="1 1 1"/>
+      </geometry>
+      <origin $J3_INVGLO/> <!-- inverse global -->
+    </visual>
+    <collision>
+      <geometry>
+        <mesh filename="$J3_FILE" scale="1 1 1"/>
+      </geometry>
+      <origin $J3_INVGLO/> <!-- inverse global -->
+    </collision>
+  </link>
+
+  <!-- MIDDLE FINGER ************************************************************************************** -->
+
+  <joint name="palm_to_middle_1" type="revolute">
+    <parent link="base_link"/>
+    <child link="middle_1"/>
+    <limit effort="1000.0" lower="-1" upper="1" velocity="0.5"/>
+    <origin $J4_FWDREL/> <!-- fwd relative-->
+    <axis xyz="0 0 1"/>
+  </joint>
+
+  <link name="middle_1">
+    <visual>
+      <geometry>
+        <mesh filename="$J4_FILE" scale="1 1 1"/>
+      </geometry>
+      <origin $J4_INVGLO/> <!-- inverse global -->
+    </visual>
+    <collision>
+      <geometry>
+        <mesh filename="$J4_FILE" scale="1 1 1"/>
+      </geometry>
+      <origin $J4_INVGLO/> <!-- inverse global -->
+    </collision>
+  </link>
+
+  <joint name="middle_1_to_middle_2" type="revolute">
+    <parent link="middle_1"/>
+    <child link="middle_2"/>
+    <limit effort="1000.0" lower="-1" upper="1" velocity="0.5"/>
+    <origin $J5_FWDREL/> <!-- fwd relative-->
+    <axis xyz="0 0 1"/>
+  </joint>
+
+  <link name="middle_2">
+    <visual>
+      <geometry>
+        <mesh filename="$J5_FILE" scale="1 1 1"/>
+      </geometry>
+      <origin $J5_INVGLO/> <!-- inverse global -->
+    </visual>
+    <collision>
+      <geometry>
+        <mesh filename="$J5_FILE" scale="1 1 1"/>
+      </geometry>
+      <origin $J5_INVGLO/> <!-- inverse global -->
+    </collision>
+  </link>
+
+  <joint name="middle_2_to_middle_3" type="revolute">
+    <parent link="middle_2"/>
+    <child link="middle_3"/>
+    <limit effort="1000.0" lower="-1" upper="1" velocity="0.5"/>
+    <origin $J6_FWDREL/> <!-- fwd relative-->
+    <axis xyz="0 0 1"/>
+  </joint>
+
+  <link name="middle_3">
+    <visual>
+      <geometry>
+        <mesh filename="$J6_FILE" scale="1 1 1"/>
+      </geometry>
+      <origin $J6_INVGLO/> <!-- inverse global -->
+    </visual>
+    <collision>
+      <geometry>
+        <mesh filename="$J6_FILE" scale="1 1 1"/>
+      </geometry>
+      <origin $J6_INVGLO/> <!-- inverse global -->
+    </collision>
+  </link>
+
+  <!-- RING FINGER ************************************************************************************** -->
+
+  <joint name="palm_to_ring_1" type="revolute">
+    <parent link="base_link"/>
+    <child link="ring_1"/>
+    <limit effort="1000.0" lower="-1" upper="1" velocity="0.5"/>
+    <origin $J10_FWDREL/> <!-- fwd relative-->
+    <axis xyz="0 0 1"/>
+  </joint>
+
+  <link name="ring_1">
+    <visual>
+      <geometry>
+        <mesh filename="$J10_FILE" scale="1 1 1"/>
+      </geometry>
+      <origin $J10_INVGLO/> <!-- inverse global -->
+    </visual>
+    <collision>
+      <geometry>
+        <mesh filename="$J10_FILE" scale="1 1 1"/>
+      </geometry>
+      <origin $J10_INVGLO/> <!-- inverse global -->
+    </collision>
+  </link>
+
+  <joint name="ring_1_to_ring_2" type="revolute">
+    <parent link="ring_1"/>
+    <child link="ring_2"/>
+    <limit effort="1000.0" lower="-1" upper="1" velocity="0.5"/>
+    <origin $J11_FWDREL/> <!-- fwd relative-->
+    <axis xyz="0 0 1"/>
+  </joint>
+
+  <link name="ring_2">
+    <visual>
+      <geometry>
+        <mesh filename="$J11_FILE" scale="1 1 1"/>
+      </geometry>
+      <origin $J11_INVGLO/> <!-- inverse global -->
+    </visual>
+    <collision>
+      <geometry>
+        <mesh filename="$J11_FILE" scale="1 1 1"/>
+      </geometry>
+      <origin $J11_INVGLO/> <!-- inverse global -->
+    </collision>
+  </link>
+
+  <joint name="ring_2_to_ring_3" type="revolute">
+    <parent link="ring_2"/>
+    <child link="ring_3"/>
+    <limit effort="1000.0" lower="-1" upper="1" velocity="0.5"/>
+    <origin $J12_FWDREL/> <!-- fwd relative-->
+    <axis xyz="0 0 1"/>
+  </joint>
+
+  <link name="ring_3">
+    <visual>
+      <geometry>
+        <mesh filename="$J12_FILE" scale="1 1 1"/>
+      </geometry>
+      <origin $J12_INVGLO/> <!-- inverse global -->
+    </visual>
+    <collision>
+      <geometry>
+        <mesh filename="$J12_FILE" scale="1 1 1"/>
+      </geometry>
+      <origin $J12_INVGLO/> <!-- inverse global -->
+    </collision>
+  </link>
+
+  <!-- PINKY FINGER ************************************************************************************** -->
+
+  <joint name="palm_to_pinky_1" type="revolute">
+    <parent link="base_link"/>
+    <child link="pinky_1"/>
+    <limit effort="1000.0" lower="-1" upper="1" velocity="0.5"/>
+    <origin $J7_FWDREL/> <!-- fwd relative-->
+    <axis xyz="0 0 1"/>
+  </joint>
+
+  <link name="pinky_1">
+    <visual>
+      <geometry>
+        <mesh filename="$J7_FILE" scale="1 1 1"/>
+      </geometry>
+      <origin $J7_INVGLO/> <!-- inverse global -->
+    </visual>
+    <collision>
+      <geometry>
+        <mesh filename="$J7_FILE" scale="1 1 1"/>
+      </geometry>
+      <origin $J7_INVGLO/> <!-- inverse global -->
+    </collision>
+  </link>
+
+  <joint name="pinky_1_to_pinky_2" type="revolute">
+    <parent link="pinky_1"/>
+    <child link="pinky_2"/>
+    <limit effort="1000.0" lower="-1" upper="1" velocity="0.5"/>
+    <origin $J8_FWDREL/> <!-- fwd relative-->
+    <axis xyz="0 0 1"/>
+  </joint>
+
+  <link name="pinky_2">
+    <visual>
+      <geometry>
+        <mesh filename="$J8_FILE" scale="1 1 1"/>
+      </geometry>
+      <origin $J8_INVGLO/> <!-- inverse global -->
+    </visual>
+    <collision>
+      <geometry>
+        <mesh filename="$J8_FILE" scale="1 1 1"/>
+      </geometry>
+      <origin $J8_INVGLO/> <!-- inverse global -->
+    </collision>
+  </link>
+
+  <joint name="pinky_2_to_pinky_3" type="revolute">
+    <parent link="pinky_2"/>
+    <child link="pinky_3"/>
+    <limit effort="1000.0" lower="-1" upper="1" velocity="0.5"/>
+    <origin $J9_FWDREL/> <!-- fwd relative-->
+    <axis xyz="0 0 1"/>
+  </joint>
+
+  <link name="pinky_3">
+    <visual>
+      <geometry>
+        <mesh filename="$J9_FILE" scale="1 1 1"/>
+      </geometry>
+      <origin $J9_INVGLO/> <!-- inverse global -->
+    </visual>
+    <collision>
+      <geometry>
+        <mesh filename="$J9_FILE" scale="1 1 1"/>
+      </geometry>
+      <origin $J9_INVGLO/> <!-- inverse global -->
+    </collision>
+  </link>
+
+  <!-- THUMB FINGER ************************************************************************************** -->
+
+  <joint name="palm_to_thumb_1" type="revolute">
+    <parent link="base_link"/>
+    <child link="thumb_1"/>
+    <limit effort="1000.0" lower="-1" upper="1" velocity="0.5"/>
+    <origin $J13_FWDREL/> <!-- fwd relative-->
+    <axis xyz="0 0 1"/>
+  </joint>
+
+  <link name="thumb_1">
+    <visual>
+      <geometry>
+        <mesh filename="$J13_FILE" scale="1 1 1"/>
+      </geometry>
+      <origin $J13_INVGLO/> <!-- inverse global -->
+    </visual>
+    <collision>
+      <geometry>
+        <mesh filename="$J13_FILE" scale="1 1 1"/>
+      </geometry>
+      <origin $J13_INVGLO/> <!-- inverse global -->
+    </collision>
+  </link>
+
+  <joint name="thumb_1_to_thumb_2" type="revolute">
+    <parent link="thumb_1"/>
+    <child link="thumb_2"/>
+    <limit effort="1000.0" lower="-1" upper="1" velocity="0.5"/>
+    <origin $J14_FWDREL/> <!-- fwd relative-->
+    <axis xyz="0 0 1"/>
+  </joint>
+
+  <link name="thumb_2">
+    <visual>
+      <geometry>
+        <mesh filename="$J14_FILE" scale="1 1 1"/>
+      </geometry>
+      <origin $J14_INVGLO/> <!-- inverse global -->
+    </visual>
+    <collision>
+      <geometry>
+        <mesh filename="$J14_FILE" scale="1 1 1"/>
+      </geometry>
+      <origin $J14_INVGLO/> <!-- inverse global -->
+    </collision>
+  </link>
+
+  <joint name="thumb_2_to_thumb_3" type="revolute">
+    <parent link="thumb_2"/>
+    <child link="thumb_3"/>
+    <limit effort="1000.0" lower="-1" upper="1" velocity="0.5"/>
+    <origin $J15_FWDREL/> <!-- fwd relative-->
+    <axis xyz="0 0 1"/>
+  </joint>
+
+  <link name="thumb_3">
+    <visual>
+      <geometry>
+        <mesh filename="$J15_FILE" scale="1 1 1"/>
+      </geometry>
+      <origin $J15_INVGLO/> <!-- inverse global -->
+    </visual>
+    <collision>
+      <geometry>
+        <mesh filename="$J15_FILE" scale="1 1 1"/>
+      </geometry>
+      <origin $J15_INVGLO/> <!-- inverse global -->
+    </collision>
+  </link>
+</robot>
