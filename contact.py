@@ -16,7 +16,7 @@ softId = p.loadSoftBody("/home/patrick/contact/bullet3/data/tube.vtk", [0, 0, 0]
                       springElasticStiffness=0.5, springDampingStiffness=0.5, springBendingStiffness=0.5, 
                       useMassSpring=1, useBendingSprings=1, collisionMargin=0.01)
 
-cubeStartPos = [-0.7, 1.6, 2.7]
+cubeStartPos = [-0.7, 1.6, 1]
 cubeStartOrientation = p.getQuaternionFromEuler([1, 0, 1.5])
 #botId = p.loadURDF("biped/biped2d_pybullet.urdf", cubeStartPos, cubeStartOrientation)
 #botId = p.loadURDF("humanoid.urdf", cubeStartPos, cubeStartOrientation)
@@ -33,8 +33,6 @@ velo_joint = np.ones(15)
 for i in range(0, p.getNumJoints(botId)):
   p.changeDynamics(botId, i, mass=0.1)
   p.changeVisualShape(botId, i, rgbaColor=[0, 0, 1, 0.5])
-  p.setJointMotorControl2(bodyUniqueId=botId, jointIndex=i, controlMode=p.VELOCITY_CONTROL, targetVelocity = velo_joint[i]*0.5, force = 10)
-  #print(i, p.getJointInfo(botId, i))
 
 
 p.changeDynamics(botId, -1, mass=0)
@@ -82,6 +80,10 @@ while p.isConnected():
 
   if sim_count < 200:
     p.applyExternalForce(botId, -1, [5, 0, -50], botPos, flags=p.WORLD_FRAME)
+
+  if sim_count == 200:
+    for i in range(0, p.getNumJoints(botId)):
+      p.setJointMotorControl2(bodyUniqueId=botId, jointIndex=i, controlMode=p.VELOCITY_CONTROL, targetVelocity = velo_joint[i]*0.5, force = 10)
 
   save_key = ord('z')
   keys = p.getKeyboardEvents()
