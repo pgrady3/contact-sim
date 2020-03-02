@@ -11,7 +11,7 @@ p.setAdditionalSearchPath(pybullet_data.getDataPath())
 
 p.resetSimulation(p.RESET_USE_DEFORMABLE_WORLD)
 
-softId = p.loadSoftBody("/home/patrick/contact/bullet3/data/tube.vtk", [0, 0, 0], mass=1, useNeoHookean = 0, NeoHookeanMu = 60, NeoHookeanLambda = 200, 
+softId = p.loadSoftBody("/home/patrick/contact/bullet3/data/tube_dense.vtk", [0, 0, 0], mass=1, useNeoHookean = 0, NeoHookeanMu = 60, NeoHookeanLambda = 200, 
                       NeoHookeanDamping = 0.01, useSelfCollision = 0, frictionCoeff = 0.5, 
                       springElasticStiffness=0.5, springDampingStiffness=0.5, springBendingStiffness=0.5, 
                       useMassSpring=1, useBendingSprings=1, collisionMargin=0.01)
@@ -32,11 +32,13 @@ velo_joint = np.ones(15)
 
 for i in range(0, p.getNumJoints(botId)):
   p.changeDynamics(botId, i, mass=0.1)
-  p.changeVisualShape(botId, i, rgbaColor=[0, 0, 1, 0.5])
+  p.changeVisualShape(botId, i, rgbaColor=[0.5, 0.4, 0.25, 1.0])
 
 
 p.changeDynamics(botId, -1, mass=0)
-p.changeVisualShape(botId, -1, rgbaColor=[0, 0, 1, 0.5])
+p.changeVisualShape(botId, -1, rgbaColor=[0.5, 0.4, 0.25, 1.0])
+
+p.changeVisualShape(softId, 1, rgbaColor=[0, 0, 1, 1.0])
 #p.changeDynamics(softId, -1, mass=1000)
 #p.configureDebugVisualizer(p.COV_ENABLE_WIREFRAME)
 
