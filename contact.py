@@ -13,22 +13,18 @@ p.resetSimulation(p.RESET_USE_DEFORMABLE_WORLD)
 
 softId = p.loadSoftBody("/home/patrick/contact/bullet3/data/tube_dense.vtk", [0, 0, 0], mass=1, useNeoHookean = 0, NeoHookeanMu = 60, NeoHookeanLambda = 200, 
                       NeoHookeanDamping = 0.01, useSelfCollision = 0, frictionCoeff = 0.5, 
-                      springElasticStiffness=0.5, springDampingStiffness=0.5, springBendingStiffness=0.5, 
-                      useMassSpring=1, useBendingSprings=1, collisionMargin=0.01)
+                      springElasticStiffness=5, springDampingStiffness=0.5, springBendingStiffness=0.5, 
+                      useMassSpring=1, useBendingSprings=1, collisionMargin=0.005)
 
-cubeStartPos = [-0.7, 1.6, 1]
-cubeStartOrientation = p.getQuaternionFromEuler([1, 0, 1.5])
-#botId = p.loadURDF("biped/biped2d_pybullet.urdf", cubeStartPos, cubeStartOrientation)
-#botId = p.loadURDF("humanoid.urdf", cubeStartPos, cubeStartOrientation)
-#botId = p.loadURDF("/home/patrick/soft/GraspIt2URDF/urdf/HumanHand20DOF.urdf", cubeStartPos, cubeStartOrientation, globalScaling=5)
-botId = p.loadURDF("/home/patrick/contact/contact-sim/urdf/hand.urdf", cubeStartPos, cubeStartOrientation, globalScaling=18)
+cubeStartPos = [0.7, 0, 1]
+cubeStartOrientation = p.getQuaternionFromEuler([1.57, 0, 1.57*0])
+botId = p.loadURDF("/home/patrick/contact/contact-sim/urdf/hand.urdf", cubeStartPos, cubeStartOrientation, globalScaling=10)
 
-velo_joint = [0, 1, 1, 1, 0, # Pinky 
-              0, 1, 1, 1, 0, # Middle
-              0, 1, 1, 1, 0, # Index
-              3, 0, 0, 1, 0] # Thumb
-
-velo_joint = np.ones(15)
+velo_joint = [1, 1, 1, #index
+              1, 1, 1, #middle
+              1, 1, 1, #ring
+              1, 1, 1, #pinky
+              1, 1, 1] #thumb
 
 for i in range(0, p.getNumJoints(botId)):
   p.changeDynamics(botId, i, mass=0.1)
@@ -85,7 +81,7 @@ while p.isConnected():
 
   if sim_count == 200:
     for i in range(0, p.getNumJoints(botId)):
-      p.setJointMotorControl2(bodyUniqueId=botId, jointIndex=i, controlMode=p.VELOCITY_CONTROL, targetVelocity = velo_joint[i]*0.5, force = 10)
+      p.setJointMotorControl2(bodyUniqueId=botId, jointIndex=i, controlMode=p.VELOCITY_CONTROL, targetVelocity = velo_joint[i], force = 3)
 
   save_key = ord('z')
   keys = p.getKeyboardEvents()

@@ -17,53 +17,65 @@ def T2xyzrpy(T):
   rx, ry, rz = r.as_euler('xyz')
   return 'xyz="{:.4f} {:.4f} {:.4f}" rpy="{:.4f} {:.4f} {:.4f}"'.format(tx, ty, tz, rx, ry, rz)
 
-# Load MANO model (here we load the right hand model)
-m = load_model('../../mano/models/MANO_RIGHT.pkl', ncomps=6, flat_hand_mean=False)
+def normalize(v):
+  return np.array(v) / np.linalg.norm(v)
 
-# Assign random pose and shape parameters
-m.betas[:] = np.random.rand(m.betas.size) * .03
-#m.pose[:] = np.random.rand(m.pose.size) * .2
-m.pose[:3] = [0., 0., 0.]
-#m.pose[3:] = [-0.42671473, -0.85829819, -0.50662164, +1.97374622, -0.84298473, -1.29958491]
-#m.pose[0] = np.pi
+for hand_iters in range(1):
+    # Load MANO model (here we load the right hand model)
+    m = load_model('../../mano/models/MANO_RIGHT.pkl', ncomps=6, flat_hand_mean=True)
+    np.random.seed() # load_model sets a fixed seed, so reset it
 
-vertices = m.r # Get vertex 3D pos
-faces=np.array(m.f) # Get face to vertex mapping
-vertex_to_joint = np.argmax(m.weights, axis=1) # Foreach vertex, find the joint with the strongest LBS value
-face_node_to_joint = vertex_to_joint[faces.flatten()].reshape(faces.shape) # Foreach face node, find corresponding joint
-face_to_joint, _ = mode(face_node_to_joint, axis=1) # Foreach face, find strongest joint
+    m.betas[:] = np.random.rand(m.betas.size) * .0 # Assign random shape parameters 
+    m.pose[:] = np.random.normal(size=m.pose.size, scale=1.0) * 0
+    m.pose[:3] = [0., 0., 0.] # Set palm rotation to zero
 
-joints3D = np.array(m.J_transformed).reshape((-1, 3))
-parent_joints = m.kintree_table[0, :]
+    vertices = m.r # Get vertex 3D pos
+    faces=np.array(m.f) # Get face to vertex mapping
 
+    vertex_to_joint = np.argmax(m.weights, axis=1) # Foreach vertex, find the joint with the strongest LBS value
+    face_node_to_joint = vertex_to_joint[faces.flatten()].reshape(faces.shape) # Foreach face node, find corresponding joint
+    face_to_joint, _ = mode(face_node_to_joint, axis=1) # Foreach face, find strongest joint
 
-tform_relative = np.zeros((16, 4, 4))
-tform_relative[0, :, :] = m.A_global[0] # Fill with original tform
+    joints3D = np.array(m.J_transformed).reshape((-1, 3))
+    parent_joints = m.kintree_table[0, :]
 
-joints_cum_tform = np.zeros((16, 4, 4))
-joints_cum_tform[0, :, :] = m.A_global[0] # Make homogeneous
+    tform_relative = np.zeros((16, 4, 4))
+    tform_relative[0, :, :] = m.A_global[0] # Fill with original tform
 
-for i in range(1, 16):
-  old_tform = m.A_global[parent_joints[i]]
-  new_tform = np.array(m.A_global[i])
-  inv_old = np.linalg.inv(old_tform)
-  rel_tform = np.dot(inv_old, new_tform)
-  tform_relative[i, :, :] = rel_tform
+    joints_cum_tform = np.zeros((16, 4, 4))
+    joints_cum_tform[0, :, :] = m.A_global[0] # Make homogeneous
 
+    for i in range(1, 16):
+      old_tform = m.A_global[parent_joints[i]]
+      new_tform = np.array(m.A_global[i])
+      inv_old = np.linalg.inv(old_tform)
+      rel_tform = np.dot(inv_old, new_tform)
+      tform_relative[i, :, :] = rel_tform
 
-for i in range(1, 16):
-  new_tform = tform_relative[i, :, :]
-  old_tform = joints_cum_tform[parent_joints[i], :, :]
-  joints_cum_tform[i, :, :] = np.dot(old_tform, new_tform)
+    joint_vecs = np.zeros((15, 3))
+    for i in range(0, 15):
+      start_idx = i * 3
+      end_idx = start_idx + 3
+      joint_vecs[i, :] = normalize(m.hands_components[0, start_idx:end_idx])
 
-jointsPos = joints_cum_tform[:, 0:3, 3] # Get translation element from transform
+    joint_vecs[13, :] = -joint_vecs[13, :] #this joint is backwards
+    joint_vecs *= -1  
+
+    fig = plt.figure()
+    ax = fig.add_subplot(111, projection='3d')
+    ax.plot_trisurf(vertices[:, 0], vertices[:, 1], vertices[:, 2], triangles=faces, linewidth=0.2, antialiased=True)
+    ax.set_aspect('equal', 'box')
+    ax.quiver(joints3D[1:, 0], joints3D[1:, 1], joints3D[1:, 2], joint_vecs[:, 0], joint_vecs[:, 1], joint_vecs[:, 2], length=0.03, color='g')
+
+    plt.show()
+
 
 lookup_dict = {}
 np.set_printoptions(precision=4, suppress=True)
 
 # 0 is palm, 1-3 index, 4-6 middle, 7-9 ring, 10-12 pinky, 13-15 thumb
 for idx in set(vertex_to_joint):
-  print('Joint, fwd, invglo', idx)
+  #print('Joint, fwd, invglo', idx)
   #print(T2xyzrpy(tform_relative[idx, :, :]))
   #print('inv XYZ rpy', T2xyzrpy(np.linalg.inv(tform_relative[idx, :, :])))
   #print('a   XYZ rpy', T2xyzrpy(np.array(m.A[:, :, idx])))
@@ -73,6 +85,11 @@ for idx in set(vertex_to_joint):
   prefix = '$J{}_'.format(idx)
   lookup_dict[prefix+'INVGLO'] = T2xyzrpy(np.linalg.inv(m.A_global[idx]))
   lookup_dict[prefix+'FWDREL'] = T2xyzrpy(tform_relative[idx, :, :])
+
+  if idx >= 1:
+    joint_vec_str = 'xyz="{:.4f} {:.4f} {:.4f}"'.format(joint_vecs[idx-1, 0], joint_vecs[idx-1, 1], joint_vecs[idx-1, 2])
+    lookup_dict[prefix+'AX'] = joint_vec_str
+    print(joint_vec_str)
 
   face_mask = face_to_joint == idx
   faces_in_joint = np.where(face_mask)[0]
@@ -86,14 +103,6 @@ for idx in set(vertex_to_joint):
   mesh.export(joint_file)
   #lookup_dict[prefix+'FILE'] = 'file://' + joint_file
   lookup_dict[prefix+'FILE'] = joint_file
-
-  fig = plt.figure()
-  ax = fig.add_subplot(111, projection='3d')
-  ax.scatter(jointsPos[:, 0], jointsPos[:, 1], jointsPos[:, 2], color='r') # Plot joints with my method
-  ax.plot_trisurf(vertices[:, 0], vertices[:, 1], vertices[:, 2], triangles=joint_faces, linewidth=0.2, antialiased=True)
-  ax.set_aspect('equal', 'box')
-
-  #plt.show()
 
 out_file = []
 

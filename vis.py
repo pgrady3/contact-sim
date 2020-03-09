@@ -51,7 +51,7 @@ orig_pt_icp = np.dot(T, orig_pt_homo.T).T
 orig_pt_icp = orig_pt_icp[:, :3]
 
 faces = np.arange(pt.shape[0]).reshape(-1, 3)
-mesh = trimesh.Trimesh(vertices=pt, faces=faces, process=False)
+mesh = trimesh.Trimesh(vertices=orig_pt, faces=faces, process=False)
 
 
 dist_pt = np.linalg.norm(pt - orig_pt_icp, axis=1)
@@ -77,4 +77,4 @@ ax.plot_trisurf(pt[:, 0], pt[:, 1], pt[:, 2], triangles=faces, linewidth=0.2, an
 ax.plot_trisurf(orig_pt_icp[:, 0], orig_pt_icp[:, 1], orig_pt_icp[:, 2], triangles=faces, linewidth=0.2, antialiased=True)
 #ax.plot_trisurf(orig_pt[:, 0], orig_pt[:, 1], orig_pt[:, 2], triangles=faces, linewidth=0.2, antialiased=True)
 
-plt.show()
+#plt.show()

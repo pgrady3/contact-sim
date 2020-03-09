@@ -34,7 +34,7 @@
     <child link="index_1"/>
     <limit effort="1000.0" lower="-1" upper="1" velocity="0.5"/>
     <origin $J1_FWDREL/> <!-- fwd relative-->
-    <axis xyz="0 0 1"/>
+    <axis $J1_AX/>
   </joint>
 
   <link name="index_1">
@@ -57,7 +57,7 @@
     <child link="index_2"/>
     <limit effort="1000.0" lower="-1" upper="1" velocity="0.5"/>
     <origin $J2_FWDREL/> <!-- fwd relative-->
-    <axis xyz="0 0 1"/>
+    <axis $J2_AX/>
   </joint>
 
   <link name="index_2">
@@ -80,7 +80,7 @@
     <child link="index_3"/>
     <limit effort="1000.0" lower="-1" upper="1" velocity="0.5"/>
     <origin $J3_FWDREL/> <!-- fwd relative-->
-    <axis xyz="0 0 1"/>
+    <axis $J3_AX/>
   </joint>
 
   <link name="index_3">
@@ -105,7 +105,7 @@
     <child link="middle_1"/>
     <limit effort="1000.0" lower="-1" upper="1" velocity="0.5"/>
     <origin $J4_FWDREL/> <!-- fwd relative-->
-    <axis xyz="0 0 1"/>
+    <axis $J4_AX/>
   </joint>
 
   <link name="middle_1">
@@ -128,7 +128,7 @@
     <child link="middle_2"/>
     <limit effort="1000.0" lower="-1" upper="1" velocity="0.5"/>
     <origin $J5_FWDREL/> <!-- fwd relative-->
-    <axis xyz="0 0 1"/>
+    <axis $J5_AX/>
   </joint>
 
   <link name="middle_2">
@@ -151,7 +151,7 @@
     <child link="middle_3"/>
     <limit effort="1000.0" lower="-1" upper="1" velocity="0.5"/>
     <origin $J6_FWDREL/> <!-- fwd relative-->
-    <axis xyz="0 0 1"/>
+    <axis $J6_AX/>
   </joint>
 
   <link name="middle_3">
@@ -176,7 +176,7 @@
     <child link="ring_1"/>
     <limit effort="1000.0" lower="-1" upper="1" velocity="0.5"/>
     <origin $J10_FWDREL/> <!-- fwd relative-->
-    <axis xyz="0 0 1"/>
+    <axis $J10_AX/>
   </joint>
 
   <link name="ring_1">
@@ -199,7 +199,7 @@
     <child link="ring_2"/>
     <limit effort="1000.0" lower="-1" upper="1" velocity="0.5"/>
     <origin $J11_FWDREL/> <!-- fwd relative-->
-    <axis xyz="0 0 1"/>
+    <axis $J11_AX/>
   </joint>
 
   <link name="ring_2">
@@ -222,7 +222,7 @@
     <child link="ring_3"/>
     <limit effort="1000.0" lower="-1" upper="1" velocity="0.5"/>
     <origin $J12_FWDREL/> <!-- fwd relative-->
-    <axis xyz="0 0 1"/>
+    <axis $J12_AX/>
   </joint>
 
   <link name="ring_3">
@@ -247,7 +247,7 @@
     <child link="pinky_1"/>
     <limit effort="1000.0" lower="-1" upper="1" velocity="0.5"/>
     <origin $J7_FWDREL/> <!-- fwd relative-->
-    <axis xyz="0 0 1"/>
+    <axis $J7_AX/>
   </joint>
 
   <link name="pinky_1">
@@ -270,7 +270,7 @@
     <child link="pinky_2"/>
     <limit effort="1000.0" lower="-1" upper="1" velocity="0.5"/>
     <origin $J8_FWDREL/> <!-- fwd relative-->
-    <axis xyz="0 0 1"/>
+    <axis $J8_AX/>
   </joint>
 
   <link name="pinky_2">
@@ -293,7 +293,7 @@
     <child link="pinky_3"/>
     <limit effort="1000.0" lower="-1" upper="1" velocity="0.5"/>
     <origin $J9_FWDREL/> <!-- fwd relative-->
-    <axis xyz="0 0 1"/>
+    <axis $J9_AX/>
   </joint>
 
   <link name="pinky_3">
@@ -318,7 +318,7 @@
     <child link="thumb_1"/>
     <limit effort="1000.0" lower="-1" upper="1" velocity="0.5"/>
     <origin $J13_FWDREL/> <!-- fwd relative-->
-    <axis xyz="0 0 1"/>
+    <axis $J13_AX/>
   </joint>
 
   <link name="thumb_1">
@@ -341,7 +341,7 @@
     <child link="thumb_2"/>
     <limit effort="1000.0" lower="-1" upper="1" velocity="0.5"/>
     <origin $J14_FWDREL/> <!-- fwd relative-->
-    <axis xyz="0 0 1"/>
+    <axis $J14_AX/>
   </joint>
 
   <link name="thumb_2">
@@ -364,7 +364,7 @@
     <child link="thumb_3"/>
     <limit effort="1000.0" lower="-1" upper="1" velocity="0.5"/>
     <origin $J15_FWDREL/> <!-- fwd relative-->
-    <axis xyz="0 0 1"/>
+    <axis $J15_AX/>
   </joint>
 
   <link name="thumb_3">
