@@ -60,13 +60,14 @@ dist_pt = dist_pt.clip(min=0)
 max_dist = dist_pt.max()
 
 
-for idx, v in enumerate(mesh.vertices):
-    base_color = [0, 0, 100, 255]
-    
-    norm_force = np.power(dist_pt[idx] / max_dist, 0.4)
-    base_color[1] = int(norm_force * 255)
-        
-    mesh.visual.vertex_colors[idx] = base_color
+# for idx, v in enumerate(mesh.vertices):
+#     base_color = [0, 0, 100, 255]
+#     norm_force = np.power(dist_pt[idx] / max_dist, 0.4)
+#     base_color[1] = int(norm_force * 255)
+#     mesh.visual.vertex_colors[idx] = base_color
+
+normalized_force = np.power(dist_pt / max_dist, 0.4)
+mesh.visual.vertex_colors = trimesh.visual.interpolate(normalized_force, color_map='viridis') 
 
 mesh.show()
 
