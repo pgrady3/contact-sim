@@ -5,34 +5,37 @@ import numpy as np
 import scipy.io
 import time
 
+HAND_FORCE = 10
+velo_joint = [3, 0.5, 0.3, #index
+              3, 0.5, 0.3, #middle
+              3, 0.5, 0.3, #ring
+              3, 0.5, 0.3, #pinky
+              3, 0.5, 0.3] #thumb
+
 physicsClient = p.connect(p.GUI)
 p.configureDebugVisualizer(p.COV_ENABLE_RENDERING, 0)
 p.setAdditionalSearchPath(pybullet_data.getDataPath())
 
 p.resetSimulation(p.RESET_USE_DEFORMABLE_WORLD)
 
-softId = p.loadSoftBody("/home/patrick/contact/bullet3/data/tube_dense.vtk", [0, 0, 0], mass=1, useNeoHookean = 0, NeoHookeanMu = 60, NeoHookeanLambda = 200, 
-                      NeoHookeanDamping = 0.01, useSelfCollision = 0, frictionCoeff = 0.5, 
-                      springElasticStiffness=5, springDampingStiffness=0.5, springBendingStiffness=0.5, 
+softId = p.loadSoftBody("/home/patrick/contact/bullet3/data/tube.vtk", [0, 0, 0], mass=1,
+                      useNeoHookean = 0, NeoHookeanMu = 60, NeoHookeanLambda = 200, NeoHookeanDamping = 0.01,
+                      useSelfCollision = 0,
+                      frictionCoeff = 0.5, 
+                      springElasticStiffness=50, springDampingStiffness=5, springBendingStiffness=5, 
                       useMassSpring=1, useBendingSprings=1, collisionMargin=0.005)
 
-cubeStartPos = [0.7, 0, 1]
-cubeStartOrientation = p.getQuaternionFromEuler([1.57, 0, 1.57*0])
-botId = p.loadURDF("/home/patrick/contact/contact-sim/urdf/hand.urdf", cubeStartPos, cubeStartOrientation, globalScaling=10)
+handStartPos = [0.9, 0, 1]
+handStartOrientation = p.getQuaternionFromEuler([1.57, 0.2, 1.57*0])
+handId = p.loadURDF("/home/patrick/contact/contact-sim/urdf/hand.urdf", handStartPos, handStartOrientation, globalScaling=16)
 
-velo_joint = [1, 1, 1, #index
-              1, 1, 1, #middle
-              1, 1, 1, #ring
-              1, 1, 1, #pinky
-              1, 1, 1] #thumb
-
-for i in range(0, p.getNumJoints(botId)):
-  p.changeDynamics(botId, i, mass=0.1)
-  p.changeVisualShape(botId, i, rgbaColor=[0.5, 0.4, 0.25, 1.0])
+for i in range(0, p.getNumJoints(handId)):
+  p.changeDynamics(handId, i, mass=0.1)
+  p.changeVisualShape(handId, i, rgbaColor=[0.5, 0.4, 0.25, 1.0])
 
 
-p.changeDynamics(botId, -1, mass=0)
-p.changeVisualShape(botId, -1, rgbaColor=[0.5, 0.4, 0.25, 1.0])
+p.changeDynamics(handId, -1, mass=0)
+p.changeVisualShape(handId, -1, rgbaColor=[0.5, 0.4, 0.25, 1.0])
 
 p.changeVisualShape(softId, 1, rgbaColor=[0, 0, 1, 1.0])
 #p.changeDynamics(softId, -1, mass=1000)
@@ -74,14 +77,14 @@ while p.isConnected():
 
   #     debug_lines[i] = p.addUserDebugLine([0,0,0], [0,0,0], replaceItemUniqueId=debug_lines[i])
 
-  botPos, botOrn = p.getBasePositionAndOrientation(botId)
+  botPos, botOrn = p.getBasePositionAndOrientation(handId)
 
   if sim_count < 200:
-    p.applyExternalForce(botId, -1, [5, 0, -50], botPos, flags=p.WORLD_FRAME)
+    p.applyExternalForce(handId, -1, [5, 0, -50], botPos, flags=p.WORLD_FRAME)
 
   if sim_count == 200:
-    for i in range(0, p.getNumJoints(botId)):
-      p.setJointMotorControl2(bodyUniqueId=botId, jointIndex=i, controlMode=p.VELOCITY_CONTROL, targetVelocity = velo_joint[i], force = 3)
+    for i in range(0, p.getNumJoints(handId)):
+      p.setJointMotorControl2(bodyUniqueId=handId, jointIndex=i, controlMode=p.VELOCITY_CONTROL, targetVelocity = velo_joint[i], force = HAND_FORCE)
 
   save_key = ord('z')
   keys = p.getKeyboardEvents()

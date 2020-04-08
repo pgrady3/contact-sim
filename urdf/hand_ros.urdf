@@ -14,14 +14,14 @@
   <link name="base_link">
     <visual>
       <geometry>
-        <mesh filename="/home/patrick/contact/contact-sim/urdf/mesh/joint_0.stl" scale="1 1 1"/>
+        <mesh filename="file:///home/patrick/contact/contact-sim/urdf/mesh/joint_0.stl" scale="1 1 1"/>
       </geometry>
       <origin xyz="-0.0957 -0.0064 -0.0062" rpy="0.0000 0.0000 0.0000"/> <!-- inverse global -->
       <material name="blue"/>
     </visual>
     <collision>
       <geometry>
-        <mesh filename="/home/patrick/contact/contact-sim/urdf/mesh/joint_0.stl" scale="1 1 1"/>
+        <mesh filename="file:///home/patrick/contact/contact-sim/urdf/mesh/joint_0.stl" scale="1 1 1"/>
       </geometry>
       <origin xyz="-0.0957 -0.0064 -0.0062" rpy="0.0000 0.0000 0.0000"/> <!-- inverse global -->
     </collision>
@@ -40,13 +40,13 @@
   <link name="index_1">
     <visual>
       <geometry>
-        <mesh filename="/home/patrick/contact/contact-sim/urdf/mesh/joint_1.stl" scale="1 1 1"/>
+        <mesh filename="file:///home/patrick/contact/contact-sim/urdf/mesh/joint_1.stl" scale="1 1 1"/>
       </geometry>
       <origin xyz="-0.0076 -0.0012 -0.0269" rpy="0.0000 0.0000 0.0000"/> <!-- inverse global -->
     </visual>
     <collision>
       <geometry>
-        <mesh filename="/home/patrick/contact/contact-sim/urdf/mesh/joint_1.stl" scale="1 1 1"/>
+        <mesh filename="file:///home/patrick/contact/contact-sim/urdf/mesh/joint_1.stl" scale="1 1 1"/>
       </geometry>
       <origin xyz="-0.0076 -0.0012 -0.0269" rpy="0.0000 0.0000 0.0000"/> <!-- inverse global -->
     </collision>
@@ -63,13 +63,13 @@
   <link name="index_2">
     <visual>
       <geometry>
-        <mesh filename="/home/patrick/contact/contact-sim/urdf/mesh/joint_2.stl" scale="1 1 1"/>
+        <mesh filename="file:///home/patrick/contact/contact-sim/urdf/mesh/joint_2.stl" scale="1 1 1"/>
       </geometry>
       <origin xyz="0.0251 -0.0052 -0.0291" rpy="0.0000 0.0000 0.0000"/> <!-- inverse global -->
     </visual>
     <collision>
       <geometry>
-        <mesh filename="/home/patrick/contact/contact-sim/urdf/mesh/joint_2.stl" scale="1 1 1"/>
+        <mesh filename="file:///home/patrick/contact/contact-sim/urdf/mesh/joint_2.stl" scale="1 1 1"/>
       </geometry>
       <origin xyz="0.0251 -0.0052 -0.0291" rpy="0.0000 0.0000 0.0000"/> <!-- inverse global -->
     </collision>
@@ -86,13 +86,13 @@
   <link name="index_3">
     <visual>
       <geometry>
-        <mesh filename="/home/patrick/contact/contact-sim/urdf/mesh/joint_3.stl" scale="1 1 1"/>
+        <mesh filename="file:///home/patrick/contact/contact-sim/urdf/mesh/joint_3.stl" scale="1 1 1"/>
       </geometry>
       <origin xyz="0.0473 -0.0039 -0.0290" rpy="0.0000 0.0000 0.0000"/> <!-- inverse global -->
     </visual>
     <collision>
       <geometry>
-        <mesh filename="/home/patrick/contact/contact-sim/urdf/mesh/joint_3.stl" scale="1 1 1"/>
+        <mesh filename="file:///home/patrick/contact/contact-sim/urdf/mesh/joint_3.stl" scale="1 1 1"/>
       </geometry>
       <origin xyz="0.0473 -0.0039 -0.0290" rpy="0.0000 0.0000 0.0000"/> <!-- inverse global -->
     </collision>
@@ -111,13 +111,13 @@
   <link name="middle_1">
     <visual>
       <geometry>
-        <mesh filename="/home/patrick/contact/contact-sim/urdf/mesh/joint_4.stl" scale="1 1 1"/>
+        <mesh filename="file:///home/patrick/contact/contact-sim/urdf/mesh/joint_4.stl" scale="1 1 1"/>
       </geometry>
       <origin xyz="-0.0010 -0.0049 -0.0028" rpy="0.0000 0.0000 0.0000"/> <!-- inverse global -->
     </visual>
     <collision>
       <geometry>
-        <mesh filename="/home/patrick/contact/contact-sim/urdf/mesh/joint_4.stl" scale="1 1 1"/>
+        <mesh filename="file:///home/patrick/contact/contact-sim/urdf/mesh/joint_4.stl" scale="1 1 1"/>
       </geometry>
       <origin xyz="-0.0010 -0.0049 -0.0028" rpy="0.0000 0.0000 0.0000"/> <!-- inverse global -->
     </collision>
@@ -134,13 +134,13 @@
   <link name="middle_2">
     <visual>
       <geometry>
-        <mesh filename="/home/patrick/contact/contact-sim/urdf/mesh/joint_5.stl" scale="1 1 1"/>
+        <mesh filename="file:///home/patrick/contact/contact-sim/urdf/mesh/joint_5.stl" scale="1 1 1"/>
       </geometry>
       <origin xyz="0.0302 -0.0068 0.0028" rpy="0.0000 0.0000 0.0000"/> <!-- inverse global -->
     </visual>
     <collision>
       <geometry>
-        <mesh filename="/home/patrick/contact/contact-sim/urdf/mesh/joint_5.stl" scale="1 1 1"/>
+        <mesh filename="file:///home/patrick/contact/contact-sim/urdf/mesh/joint_5.stl" scale="1 1 1"/>
       </geometry>
       <origin xyz="0.0302 -0.0068 0.0028" rpy="0.0000 0.0000 0.0000"/> <!-- inverse global -->
     </collision>
@@ -157,13 +157,13 @@
   <link name="middle_3">
     <visual>
       <geometry>
-        <mesh filename="/home/patrick/contact/contact-sim/urdf/mesh/joint_6.stl" scale="1 1 1"/>
+        <mesh filename="file:///home/patrick/contact/contact-sim/urdf/mesh/joint_6.stl" scale="1 1 1"/>
       </geometry>
       <origin xyz="0.0531 -0.0055 0.0067" rpy="0.0000 0.0000 0.0000"/> <!-- inverse global -->
     </visual>
     <collision>
       <geometry>
-        <mesh filename="/home/patrick/contact/contact-sim/urdf/mesh/joint_6.stl" scale="1 1 1"/>
+        <mesh filename="file:///home/patrick/contact/contact-sim/urdf/mesh/joint_6.stl" scale="1 1 1"/>
       </geometry>
       <origin xyz="0.0531 -0.0055 0.0067" rpy="0.0000 0.0000 0.0000"/> <!-- inverse global -->
     </collision>
@@ -182,13 +182,13 @@
   <link name="ring_1">
     <visual>
       <geometry>
-        <mesh filename="/home/patrick/contact/contact-sim/urdf/mesh/joint_10.stl" scale="1 1 1"/>
+        <mesh filename="file:///home/patrick/contact/contact-sim/urdf/mesh/joint_10.stl" scale="1 1 1"/>
       </geometry>
       <origin xyz="-0.0139 -0.0024 0.0205" rpy="0.0000 0.0000 0.0000"/> <!-- inverse global -->
     </visual>
     <collision>
       <geometry>
-        <mesh filename="/home/patrick/contact/contact-sim/urdf/mesh/joint_10.stl" scale="1 1 1"/>
+        <mesh filename="file:///home/patrick/contact/contact-sim/urdf/mesh/joint_10.stl" scale="1 1 1"/>
       </geometry>
       <origin xyz="-0.0139 -0.0024 0.0205" rpy="0.0000 0.0000 0.0000"/> <!-- inverse global -->
     </collision>
@@ -205,13 +205,13 @@
   <link name="ring_2">
     <visual>
       <geometry>
-        <mesh filename="/home/patrick/contact/contact-sim/urdf/mesh/joint_11.stl" scale="1 1 1"/>
+        <mesh filename="file:///home/patrick/contact/contact-sim/urdf/mesh/joint_11.stl" scale="1 1 1"/>
       </geometry>
       <origin xyz="0.0144 -0.0045 0.0256" rpy="0.0000 0.0000 0.0000"/> <!-- inverse global -->
     </visual>
     <collision>
       <geometry>
-        <mesh filename="/home/patrick/contact/contact-sim/urdf/mesh/joint_11.stl" scale="1 1 1"/>
+        <mesh filename="file:///home/patrick/contact/contact-sim/urdf/mesh/joint_11.stl" scale="1 1 1"/>
       </geometry>
       <origin xyz="0.0144 -0.0045 0.0256" rpy="0.0000 0.0000 0.0000"/> <!-- inverse global -->
     </collision>
@@ -228,13 +228,13 @@
   <link name="ring_3">
     <visual>
       <geometry>
-        <mesh filename="/home/patrick/contact/contact-sim/urdf/mesh/joint_12.stl" scale="1 1 1"/>
+        <mesh filename="file:///home/patrick/contact/contact-sim/urdf/mesh/joint_12.stl" scale="1 1 1"/>
       </geometry>
       <origin xyz="0.0379 -0.0028 0.0332" rpy="0.0000 0.0000 0.0000"/> <!-- inverse global -->
     </visual>
     <collision>
       <geometry>
-        <mesh filename="/home/patrick/contact/contact-sim/urdf/mesh/joint_12.stl" scale="1 1 1"/>
+        <mesh filename="file:///home/patrick/contact/contact-sim/urdf/mesh/joint_12.stl" scale="1 1 1"/>
       </geometry>
       <origin xyz="0.0379 -0.0028 0.0332" rpy="0.0000 0.0000 0.0000"/> <!-- inverse global -->
     </collision>
@@ -253,13 +253,13 @@
   <link name="pinky_1">
     <visual>
       <geometry>
-        <mesh filename="/home/patrick/contact/contact-sim/urdf/mesh/joint_7.stl" scale="1 1 1"/>
+        <mesh filename="file:///home/patrick/contact/contact-sim/urdf/mesh/joint_7.stl" scale="1 1 1"/>
       </geometry>
       <origin xyz="-0.0269 0.0036 0.0370" rpy="0.0000 0.0000 0.0000"/> <!-- inverse global -->
     </visual>
     <collision>
       <geometry>
-        <mesh filename="/home/patrick/contact/contact-sim/urdf/mesh/joint_7.stl" scale="1 1 1"/>
+        <mesh filename="file:///home/patrick/contact/contact-sim/urdf/mesh/joint_7.stl" scale="1 1 1"/>
       </geometry>
       <origin xyz="-0.0269 0.0036 0.0370" rpy="0.0000 0.0000 0.0000"/> <!-- inverse global -->
     </collision>
@@ -276,13 +276,13 @@
   <link name="pinky_2">
     <visual>
       <geometry>
-        <mesh filename="/home/patrick/contact/contact-sim/urdf/mesh/joint_8.stl" scale="1 1 1"/>
+        <mesh filename="file:///home/patrick/contact/contact-sim/urdf/mesh/joint_8.stl" scale="1 1 1"/>
       </geometry>
       <origin xyz="-0.0099 0.0035 0.0495" rpy="0.0000 0.0000 0.0000"/> <!-- inverse global -->
     </visual>
     <collision>
       <geometry>
-        <mesh filename="/home/patrick/contact/contact-sim/urdf/mesh/joint_8.stl" scale="1 1 1"/>
+        <mesh filename="file:///home/patrick/contact/contact-sim/urdf/mesh/joint_8.stl" scale="1 1 1"/>
       </geometry>
       <origin xyz="-0.0099 0.0035 0.0495" rpy="0.0000 0.0000 0.0000"/> <!-- inverse global -->
     </collision>
@@ -299,13 +299,13 @@
   <link name="pinky_3">
     <visual>
       <geometry>
-        <mesh filename="/home/patrick/contact/contact-sim/urdf/mesh/joint_9.stl" scale="1 1 1"/>
+        <mesh filename="file:///home/patrick/contact/contact-sim/urdf/mesh/joint_9.stl" scale="1 1 1"/>
       </geometry>
       <origin xyz="0.0060 0.0042 0.0599" rpy="0.0000 0.0000 0.0000"/> <!-- inverse global -->
     </visual>
     <collision>
       <geometry>
-        <mesh filename="/home/patrick/contact/contact-sim/urdf/mesh/joint_9.stl" scale="1 1 1"/>
+        <mesh filename="file:///home/patrick/contact/contact-sim/urdf/mesh/joint_9.stl" scale="1 1 1"/>
       </geometry>
       <origin xyz="0.0060 0.0042 0.0599" rpy="0.0000 0.0000 0.0000"/> <!-- inverse global -->
     </collision>
@@ -324,13 +324,13 @@
   <link name="thumb_1">
     <visual>
       <geometry>
-        <mesh filename="/home/patrick/contact/contact-sim/urdf/mesh/joint_13.stl" scale="1 1 1"/>
+        <mesh filename="file:///home/patrick/contact/contact-sim/urdf/mesh/joint_13.stl" scale="1 1 1"/>
       </geometry>
       <origin xyz="-0.0716 0.0091 -0.0320" rpy="0.0000 0.0000 0.0000"/> <!-- inverse global -->
     </visual>
     <collision>
       <geometry>
-        <mesh filename="/home/patrick/contact/contact-sim/urdf/mesh/joint_13.stl" scale="1 1 1"/>
+        <mesh filename="file:///home/patrick/contact/contact-sim/urdf/mesh/joint_13.stl" scale="1 1 1"/>
       </geometry>
       <origin xyz="-0.0716 0.0091 -0.0320" rpy="0.0000 0.0000 0.0000"/> <!-- inverse global -->
     </collision>
@@ -347,13 +347,13 @@
   <link name="thumb_2">
     <visual>
       <geometry>
-        <mesh filename="/home/patrick/contact/contact-sim/urdf/mesh/joint_14.stl" scale="1 1 1"/>
+        <mesh filename="file:///home/patrick/contact/contact-sim/urdf/mesh/joint_14.stl" scale="1 1 1"/>
       </geometry>
       <origin xyz="-0.0519 0.0082 -0.0557" rpy="0.0000 0.0000 0.0000"/> <!-- inverse global -->
     </visual>
     <collision>
       <geometry>
-        <mesh filename="/home/patrick/contact/contact-sim/urdf/mesh/joint_14.stl" scale="1 1 1"/>
+        <mesh filename="file:///home/patrick/contact/contact-sim/urdf/mesh/joint_14.stl" scale="1 1 1"/>
       </geometry>
       <origin xyz="-0.0519 0.0082 -0.0557" rpy="0.0000 0.0000 0.0000"/> <!-- inverse global -->
     </collision>
@@ -370,13 +370,13 @@
   <link name="thumb_3">
     <visual>
       <geometry>
-        <mesh filename="/home/patrick/contact/contact-sim/urdf/mesh/joint_15.stl" scale="1 1 1"/>
+        <mesh filename="file:///home/patrick/contact/contact-sim/urdf/mesh/joint_15.stl" scale="1 1 1"/>
       </geometry>
       <origin xyz="-0.0297 0.0137 -0.0702" rpy="0.0000 0.0000 0.0000"/> <!-- inverse global -->
     </visual>
     <collision>
       <geometry>
-        <mesh filename="/home/patrick/contact/contact-sim/urdf/mesh/joint_15.stl" scale="1 1 1"/>
+        <mesh filename="file:///home/patrick/contact/contact-sim/urdf/mesh/joint_15.stl" scale="1 1 1"/>
       </geometry>
       <origin xyz="-0.0297 0.0137 -0.0702" rpy="0.0000 0.0000 0.0000"/> <!-- inverse global -->
     </collision>

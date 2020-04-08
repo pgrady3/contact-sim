@@ -41,40 +41,50 @@ def load_mat(filename):
 
     return pt, contact_pt, contact_force
 
-pt, contact_pt, contact_force = load_mat('deformed.mat')
+deform_pt, contact_pt, contact_force = load_mat('deformed.mat')
 orig_pt, _, _ = load_mat('orig.mat')
 
-T, distances, iterations = icp.icp(orig_pt, pt, max_iterations=20, tolerance=0.0001)
+T, distances, iterations = icp.icp(orig_pt, deform_pt, max_iterations=20, tolerance=0.0001)
 orig_pt_homo = np.ones((orig_pt.shape[0], 4))
 orig_pt_homo[:, :3] = orig_pt
 orig_pt_icp = np.dot(T, orig_pt_homo.T).T
 orig_pt_icp = orig_pt_icp[:, :3]
 
-faces = np.arange(pt.shape[0]).reshape(-1, 3)
-mesh = trimesh.Trimesh(vertices=orig_pt, faces=faces, process=False)
+shifted_pt = np.array(deform_pt)
+shifted_pt[:, 0] += 1
+faces = np.arange(deform_pt.shape[0]).reshape(-1, 3)
+mesh_deform = trimesh.Trimesh(vertices=shifted_pt, faces=faces, process=False)
+mesh_force = trimesh.Trimesh(vertices=orig_pt, faces=faces, process=False)
 
-
-dist_pt = np.linalg.norm(pt - orig_pt_icp, axis=1)
+dist_pt = np.linalg.norm(deform_pt - orig_pt_icp, axis=1)
 dist_pt = dist_pt - dist_pt.mean()
 dist_pt = dist_pt.clip(min=0)
-max_dist = dist_pt.max()
+dist_pt = dist_pt + dist_pt.min()
 
+normalized_deform = np.power(dist_pt / dist_pt.max(), 0.4)
+mesh_deform.visual.vertex_colors = trimesh.visual.interpolate(normalized_deform, color_map='viridis') 
 
-# for idx, v in enumerate(mesh.vertices):
-#     base_color = [0, 0, 100, 255]
-#     norm_force = np.power(dist_pt[idx] / max_dist, 0.4)
-#     base_color[1] = int(norm_force * 255)
-#     mesh.visual.vertex_colors[idx] = base_color
+force_pt = np.zeros(dist_pt.shape)
+for i in range(contact_pt.shape[0]):
+    dist_to_contact = np.linalg.norm(contact_pt[i, :] - deform_pt, axis=1)
+    #min_idx = np.argmin(dist_to_contact)
+    #print(dist_to_contact[min_idx])
+    close_pts = dist_to_contact < 0.0001
+    
+    force_pt[close_pts] = contact_force[i]
 
-normalized_force = np.power(dist_pt / max_dist, 0.4)
-mesh.visual.vertex_colors = trimesh.visual.interpolate(normalized_force, color_map='viridis') 
+normalized_force = np.power(force_pt / force_pt.max(), 0.2)
+mesh_force.visual.vertex_colors = trimesh.visual.interpolate(normalized_force, color_map='viridis') 
 
-mesh.show()
+vis_list = []
+#vis_list.append(mesh_force)
+vis_list.append(mesh_deform)
+trimesh.Scene(vis_list).show()
 
 fig = plt.figure()
 ax = fig.gca(projection='3d')
 
-ax.plot_trisurf(pt[:, 0], pt[:, 1], pt[:, 2], triangles=faces, linewidth=0.2, antialiased=True)
+ax.plot_trisurf(deform_pt[:, 0], deform_pt[:, 1], deform_pt[:, 2], triangles=faces, linewidth=0.2, antialiased=True)
 ax.plot_trisurf(orig_pt_icp[:, 0], orig_pt_icp[:, 1], orig_pt_icp[:, 2], triangles=faces, linewidth=0.2, antialiased=True)
 #ax.plot_trisurf(orig_pt[:, 0], orig_pt[:, 1], orig_pt[:, 2], triangles=faces, linewidth=0.2, antialiased=True)
 
