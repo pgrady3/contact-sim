@@ -4,99 +4,97 @@ from time import sleep
 import numpy as np
 import scipy.io
 import time
+import argparse
+import ast
 
-HAND_FORCE = 10
+def parse_args():
+  parser = argparse.ArgumentParser(description='Contact simulation')
+  parser.add_argument('--file', required=True, type=str, help='File name of object to grasp')
+  parser.add_argument('--nogui', action='store_true', help='Disable GUI')
+  parser.add_argument('--pos', default="[0,0,0]", type=str, help='Starting position of hand')
+  parser.add_argument('--euler', default="[0,0,0]", type=str, help='Starting euler rotation of hand')
+  parser.add_argument('--iter', default=1000, type=int, help='Number of iterations before termination')
+  parser.add_argument('--force', default=10, type=float, help='Hand closing force')
+  parser.add_argument('--vec', action='store_true', help='Draw force vectors')
+  args = parser.parse_args()
+
+  args.pos = ast.literal_eval(args.pos) # Parse into list
+  args.euler = ast.literal_eval(args.euler)
+
+  return args
+
+def save_model(filename, softId):
+  print('Saving')
+
+  softPos, softRot = p.getBasePositionAndOrientation(softId)
+  x0, y0, z0, x1, y1, z1, x2, y2, z2, contX, contY, contZ, contForceX, contForceY, contForceZ = p.getSoftBodyData(softId)
+  save_dict = {'pos':softPos, 'rot':softRot, 'x0':x0,'y0':y0,'z0':z0,'x1':x1,'y1':y1,'z1':z1,'x2':x2,'y2':y2,'z2':z2, 'contX':contX, 'contY':contY, 'contZ':contZ, 'contForceX':contForceX, 'contForceY':contForceY, 'contForceZ':contForceZ}
+  scipy.io.savemat(filename, save_dict)
+
 velo_joint = [3, 0.5, 0.3, #index
               3, 0.5, 0.3, #middle
               3, 0.5, 0.3, #ring
               3, 0.5, 0.3, #pinky
               3, 0.5, 0.3] #thumb
 
+args = parse_args()
+
 physicsClient = p.connect(p.GUI)
 p.configureDebugVisualizer(p.COV_ENABLE_RENDERING, 0)
-p.setAdditionalSearchPath(pybullet_data.getDataPath())
-
 p.resetSimulation(p.RESET_USE_DEFORMABLE_WORLD)
+#p.setPhysicsEngineParameter(sparseSdfVoxelSize=0.025)
+p.setRealTimeSimulation(0)
+p.setGravity(0, 0, 10)
 
-softId = p.loadSoftBody("/home/patrick/contact/bullet3/data/tube.vtk", [0, 0, 0], mass=1,
+softId = p.loadSoftBody(args.file, [0, 0, 0], mass=1,
                       useNeoHookean = 0, NeoHookeanMu = 60, NeoHookeanLambda = 200, NeoHookeanDamping = 0.01,
                       useSelfCollision = 0,
                       frictionCoeff = 0.5, 
                       springElasticStiffness=50, springDampingStiffness=5, springBendingStiffness=5, 
                       useMassSpring=1, useBendingSprings=1, collisionMargin=0.005)
+p.changeVisualShape(softId, 1, rgbaColor=[0, 0, 1, 1.0])
 
-handStartPos = [0.9, 0, 1]
-handStartOrientation = p.getQuaternionFromEuler([1.57, 0.2, 1.57*0])
-handId = p.loadURDF("/home/patrick/contact/contact-sim/urdf/hand.urdf", handStartPos, handStartOrientation, globalScaling=16)
-
+handId = p.loadURDF("/home/patrick/contact/contact-sim/urdf/hand.urdf", args.pos, p.getQuaternionFromEuler(args.euler), globalScaling=16)
+p.changeDynamics(handId, -1, mass=0)
 for i in range(0, p.getNumJoints(handId)):
   p.changeDynamics(handId, i, mass=0.1)
-  p.changeVisualShape(handId, i, rgbaColor=[0.5, 0.4, 0.25, 1.0])
 
-
-p.changeDynamics(handId, -1, mass=0)
-p.changeVisualShape(handId, -1, rgbaColor=[0.5, 0.4, 0.25, 1.0])
-
-p.changeVisualShape(softId, 1, rgbaColor=[0, 0, 1, 1.0])
-#p.changeDynamics(softId, -1, mass=1000)
-#p.configureDebugVisualizer(p.COV_ENABLE_WIREFRAME)
-
-#p.setPhysicsEngineParameter(sparseSdfVoxelSize=0.025)
-p.setRealTimeSimulation(0)
-p.setGravity(0, 0, 10)
 p.configureDebugVisualizer(p.COV_ENABLE_RENDERING, 1)
 
-# debug_lines = []
-# for i in range(200):
-#     line_id = p.addUserDebugLine([0,0,0], [0,0,0])
-#     debug_lines.append(line_id)
+if args.vec:
+  debug_lines = []
+  for i in range(200):
+      line_id = p.addUserDebugLine([0,0,0], [0,0,0])
+      debug_lines.append(line_id)
 
-def save_model(filename):
-    print('Saving')
+sim_ticks = 0
+while p.isConnected() and sim_ticks < args.iter:
 
-    softPos, softRot = p.getBasePositionAndOrientation(softId)
+  if args.vec:
     x0, y0, z0, x1, y1, z1, x2, y2, z2, contX, contY, contZ, contForceX, contForceY, contForceZ = p.getSoftBodyData(softId)
     contact_pt = np.stack((contX, contY, contZ)).T
     contact_force = np.stack((contForceX, contForceY, contForceZ)).T
-    save_dict = {'pos':softPos, 'rot':softRot, 'x0':x0,'y0':y0,'z0':z0,'x1':x1,'y1':y1,'z1':z1,'x2':x2,'y2':y2,'z2':z2, 'contX':contX, 'contY':contY, 'contZ':contZ, 'contForceX':contForceX, 'contForceY':contForceY, 'contForceZ':contForceZ}
-    scipy.io.savemat(filename, save_dict)
+    for i in range(len(debug_lines)):
+      if i < len(contX):
+        pt = contact_pt[i, :]
+        debug_lines[i] = p.addUserDebugLine(pt, pt + contact_force[i, :]*0.01, lineWidth=5, replaceItemUniqueId=debug_lines[i])
+      else:
+        debug_lines[i] = p.addUserDebugLine([0,0,0], [0,0,0], replaceItemUniqueId=debug_lines[i])
 
-sim_count = 0
-last_time = time.time()
-
-while p.isConnected():
-  #p.getSoftBodyData(softId)
-
-
-  # for i in range(len(debug_lines)):
-  #   if i < len(contX):
-  #     pt = contact_pt[i, :]
-  #     #pt[1] += 2
-  #     debug_lines[i] = p.addUserDebugLine(pt, pt + contact_force[i, :]*0.01, lineWidth=5, replaceItemUniqueId=debug_lines[i])
-  #   else:
-
-  #     debug_lines[i] = p.addUserDebugLine([0,0,0], [0,0,0], replaceItemUniqueId=debug_lines[i])
 
   botPos, botOrn = p.getBasePositionAndOrientation(handId)
 
-  if sim_count < 200:
-    p.applyExternalForce(handId, -1, [5, 0, -50], botPos, flags=p.WORLD_FRAME)
-
-  if sim_count == 200:
+  if sim_ticks == 200:
     for i in range(0, p.getNumJoints(handId)):
-      p.setJointMotorControl2(bodyUniqueId=handId, jointIndex=i, controlMode=p.VELOCITY_CONTROL, targetVelocity = velo_joint[i], force = HAND_FORCE)
+      p.setJointMotorControl2(bodyUniqueId=handId, jointIndex=i, controlMode=p.VELOCITY_CONTROL, targetVelocity = velo_joint[i], force = args.force)
 
   save_key = ord('z')
   keys = p.getKeyboardEvents()
   if save_key in keys and keys[save_key]&p.KEY_WAS_TRIGGERED:
-    save_model('deformed.mat')
+    save_model('deformed.mat', softId)
 
-  if sim_count == 2:
-    save_model('orig.mat')
-
+  if sim_ticks == 2:
+    save_model('orig.mat', softId)
 
   p.stepSimulation()
-  #sleep(1./240.)
-  sim_count += 1
-  print('Sim step takes', time.time() - last_time)
-  last_time = time.time()
+  sim_ticks += 1
