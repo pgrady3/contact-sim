@@ -6,6 +6,8 @@ import scipy.io
 import time
 import argparse
 import ast
+import matplotlib.pyplot as plt
+from PIL import Image
 
 def parse_args():
   parser = argparse.ArgumentParser(description='Contact simulation')
@@ -16,6 +18,7 @@ def parse_args():
   parser.add_argument('--iter', default=1000, type=int, help='Number of iterations before termination')
   parser.add_argument('--force', default=10, type=float, help='Hand closing force')
   parser.add_argument('--vec', action='store_true', help='Draw force vectors')
+  parser.add_argument('--outfile', default='test', type=str, help='Output filename')
   args = parser.parse_args()
 
   args.pos = ast.literal_eval(args.pos) # Parse into list
@@ -24,12 +27,45 @@ def parse_args():
   return args
 
 def save_model(filename, softId):
-  print('Saving')
+  print('Saving', filename)
 
   softPos, softRot = p.getBasePositionAndOrientation(softId)
   x0, y0, z0, x1, y1, z1, x2, y2, z2, contX, contY, contZ, contForceX, contForceY, contForceZ = p.getSoftBodyData(softId)
   save_dict = {'pos':softPos, 'rot':softRot, 'x0':x0,'y0':y0,'z0':z0,'x1':x1,'y1':y1,'z1':z1,'x2':x2,'y2':y2,'z2':z2, 'contX':contX, 'contY':contY, 'contZ':contZ, 'contForceX':contForceX, 'contForceY':contForceY, 'contForceZ':contForceZ}
   scipy.io.savemat(filename, save_dict)
+
+def gen_img(view_matrix, im_width, im_height):
+  far = 9.1
+  near = 0.1
+  projectionMatrix = p.computeProjectionMatrixFOV(fov=45.0, aspect=1.0, nearVal=near, farVal=far)
+
+  width, height, rgbImg, depthImg, segImg = p.getCameraImage(width=im_width, height=im_height, viewMatrix=view_matrix, projectionMatrix=projectionMatrix, 
+                                                          renderer=p.ER_BULLET_HARDWARE_OPENGL)
+  rgb_img = np.reshape(rgbImg, (height, width, 4))
+  rgb_img = rgb_img * (1. / 255.)
+  depth_buffer = np.reshape(depthImg, [width, height])
+  depth_img = far * near / (far - (far - near) * depth_buffer)
+  seg_img = np.reshape(segImg, [width, height]) * 1. / 255.
+
+  return rgb_img
+
+def save_img(filename, im_width=500, im_height=500):
+  view_matrix_1 = p.computeViewMatrix(cameraEyePosition=[-3, 3, 3], cameraTargetPosition=[0, 0, 0], cameraUpVector=[0, 0, 1])
+  rgb_1 = gen_img(view_matrix_1, im_width, im_height)
+  view_matrix_2 = p.computeViewMatrix(cameraEyePosition=[0, -4, 1], cameraTargetPosition=[0, 0, 0], cameraUpVector=[0, 0, 1])
+  rgb_2 = gen_img(view_matrix_2, im_width, im_height)
+  view_matrix_3 = p.computeViewMatrix(cameraEyePosition=[-3, 3, -1], cameraTargetPosition=[0, 0, 0], cameraUpVector=[0, 0, 1])
+  rgb_3 = gen_img(view_matrix_3, im_width, im_height)
+
+  rgb_all = np.concatenate((rgb_1, rgb_2, rgb_3), axis=1)
+  # plt.imshow(rgb_all)
+  # plt.axis('off')
+  # plt.show()
+
+  rgb_save = rgb_all[:,:,:3] * 255.
+  pil_im = Image.fromarray(rgb_save.astype(np.uint8))
+  pil_im.save(args.outfile + '_vis.png')
+
 
 velo_joint = [3, 0.5, 0.3, #index
               3, 0.5, 0.3, #middle
@@ -40,6 +76,7 @@ velo_joint = [3, 0.5, 0.3, #index
 args = parse_args()
 
 physicsClient = p.connect(p.GUI)
+
 p.configureDebugVisualizer(p.COV_ENABLE_RENDERING, 0)
 p.resetSimulation(p.RESET_USE_DEFORMABLE_WORLD)
 #p.setPhysicsEngineParameter(sparseSdfVoxelSize=0.025)
@@ -59,7 +96,8 @@ p.changeDynamics(handId, -1, mass=0)
 for i in range(0, p.getNumJoints(handId)):
   p.changeDynamics(handId, i, mass=0.1)
 
-p.configureDebugVisualizer(p.COV_ENABLE_RENDERING, 1)
+if not args.nogui:
+  p.configureDebugVisualizer(p.COV_ENABLE_RENDERING, 1)
 
 if args.vec:
   debug_lines = []
@@ -68,6 +106,7 @@ if args.vec:
       debug_lines.append(line_id)
 
 sim_ticks = 0
+start_time = time.time()
 while p.isConnected() and sim_ticks < args.iter:
 
   if args.vec:
@@ -91,10 +130,14 @@ while p.isConnected() and sim_ticks < args.iter:
   save_key = ord('z')
   keys = p.getKeyboardEvents()
   if save_key in keys and keys[save_key]&p.KEY_WAS_TRIGGERED:
-    save_model('deformed.mat', softId)
+    save_model(args.outfile + '_deformed.mat', softId)
 
   if sim_ticks == 2:
-    save_model('orig.mat', softId)
+    save_model(args.outfile + '_orig.mat', softId)
 
   p.stepSimulation()
   sim_ticks += 1
+
+save_model(args.outfile + '_deformed.mat', softId)
+print('Runtime: ', time.time() - start_time, ' sec')
+save_img(args.outfile)
