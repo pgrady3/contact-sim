@@ -19,6 +19,11 @@ def parse_args():
   parser.add_argument('--force', default=10, type=float, help='Hand closing force')
   parser.add_argument('--vec', action='store_true', help='Draw force vectors')
   parser.add_argument('--outfile', default='test', type=str, help='Output filename')
+  parser.add_argument('--allegro', action='store_true', help='Use Allegro hand')
+  parser.add_argument('--elastic', default=50, type=float, help='Spring Elastic Stiffness')
+  parser.add_argument('--damping', default=5, type=float, help='Spring Damping Stiffness')
+  parser.add_argument('--bending', default=5, type=float, help='Spring Bending Stiffness')
+  
   args = parser.parse_args()
 
   args.pos = ast.literal_eval(args.pos) # Parse into list
@@ -67,19 +72,37 @@ def save_img(filename, im_width=500, im_height=500):
   pil_im.save(args.outfile + '_vis.png')
 
 
-velo_joint = [3, 0.5, 0.3, #index
-              3, 0.5, 0.3, #middle
-              3, 0.5, 0.3, #ring
-              3, 0.5, 0.3, #pinky
-              3, 0.5, 0.3] #thumb
-
 args = parse_args()
+
+if args.allegro:
+  initial_velo = [0, 1, 1, 1, 0, # Pinky 
+              0, 1, 1, 1, 0, # Middle
+              0, 1, 1, 1, 0, # Index
+              3, 0, 0, 1, 0] # Thumb
+
+  velo_joint = [0, 1, 1, 1, 0, # Pinky 
+              0, 1, 1, 1, 0, # Middle
+              0, 1, 1, 1, 0, # Index
+              3, 0, 0, 1, 0] # Thumb
+else:
+  initial_velo = [0, 0, 0, #index
+                0, 0, 0, #middle
+                0, 0, 0, #ring
+                0, 0, 0, #pinky
+                -1, -0.5, -0.3] #thumb
+
+  velo_joint = [3, 0.5, 0.3, #index
+                3, 0.5, 0.3, #middle
+                3, 0.5, 0.3, #ring
+                3, 0.5, 0.3, #pinky
+                3, 0.5, 0.3] #thumb
+
 
 physicsClient = p.connect(p.GUI)
 
 p.configureDebugVisualizer(p.COV_ENABLE_RENDERING, 0)
 p.resetSimulation(p.RESET_USE_DEFORMABLE_WORLD)
-#p.setPhysicsEngineParameter(sparseSdfVoxelSize=0.025)
+p.setPhysicsEngineParameter(sparseSdfVoxelSize=0.025)
 p.setRealTimeSimulation(0)
 p.setGravity(0, 0, 10)
 
@@ -91,10 +114,18 @@ softId = p.loadSoftBody(args.file, [0, 0, 0], mass=1,
                       useMassSpring=1, useBendingSprings=1, collisionMargin=0.005)
 p.changeVisualShape(softId, 1, rgbaColor=[0, 0, 1, 1.0])
 
-handId = p.loadURDF("/home/patrick/contact/contact-sim/urdf/hand.urdf", args.pos, p.getQuaternionFromEuler(args.euler), globalScaling=16)
+if args.allegro:
+  new_euler = [args.euler[0] - 1.57, 1.57 - args.euler[1], args.euler[2] + 3.1415]
+  new_pos = np.array(args.pos) + [-0.5,0,0]
+  handStartOrientation = p.getQuaternionFromEuler(new_euler)
+  handId = p.loadURDF("/home/patrick/contact/allegro_hand_ros/allegro_hand_description/allegro_hand_description_left.urdf", new_pos, handStartOrientation, globalScaling=10)
+else:
+  handId = p.loadURDF("/home/patrick/contact/contact-sim/urdf/hand.urdf", args.pos, p.getQuaternionFromEuler(args.euler), globalScaling=16)
+
 p.changeDynamics(handId, -1, mass=0)
 for i in range(0, p.getNumJoints(handId)):
   p.changeDynamics(handId, i, mass=0.1)
+  p.setJointMotorControl2(bodyUniqueId=handId, jointIndex=i, controlMode=p.VELOCITY_CONTROL, targetVelocity = initial_velo[i], force = args.force)
 
 if not args.nogui:
   p.configureDebugVisualizer(p.COV_ENABLE_RENDERING, 1)

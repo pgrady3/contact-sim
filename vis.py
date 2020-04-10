@@ -5,6 +5,14 @@ import trimesh
 from mpl_toolkits.mplot3d import Axes3D
 import matplotlib.pyplot as plt
 import icp
+import argparse
+
+def parse_args():
+  parser = argparse.ArgumentParser(description='Contact visualization')
+  parser.add_argument('--infile', default='output/test1', type=str, help='Input filename')
+  args = parser.parse_args()
+
+  return args
 
 def load_mat(filename):
     mat_content = scipy.io.loadmat(filename, squeeze_me=True)
@@ -41,8 +49,50 @@ def load_mat(filename):
 
     return pt, contact_pt, contact_force
 
-deform_pt, contact_pt, contact_force = load_mat('deformed.mat')
-orig_pt, _, _ = load_mat('orig.mat')
+def render_mesh(mesh, fileprefix):
+
+    mesh_list = []
+    for i in range(3):
+        m = mesh.copy()
+        R = trimesh.transformations.rotation_matrix(i * 1.0, [1,0,1])
+        m.apply_transform(R)
+        m.apply_translation([i*2.5, 0, 0])
+        mesh_list.append(m)
+
+        m = mesh.copy()
+        R = trimesh.transformations.rotation_matrix((i+1) * 1.0, [1,1,0])
+        m.apply_transform(R)
+        m.apply_translation([i*2.5, 2.5, 0])
+        mesh_list.append(m)
+
+    scene = trimesh.Scene(mesh_list)
+
+    for i in range(1):
+        #camera_old, _geometry = scene.graph[scene.camera.name]
+        #camera_new = np.dot(camera_old, rotate)
+        #scene.graph[scene.camera.name] = camera_new
+        #rotate = trimesh.transformations.rotation_matrix(angle=np.radians(60.0 * i), direction=[0, 1, 0], point=scene.centroid)
+        
+        #fov = np.array([20, 50])
+        #transform = trimesh.scene.cameras.look_at(mesh.vertices, fov, rotation=rotate)
+        #print(transform)
+        #scene.graph[scene.camera.name] = transform
+
+        try:
+            # increment the file name
+            file_name = fileprefix + '_' + str(i) + '.png'
+            png = scene.save_image(resolution=[1920, 1080], visible=True)
+            with open(file_name, 'wb') as f:
+                f.write(png)
+                f.close()
+
+        except BaseException as E:
+            print("unable to save image", str(E))
+
+args = parse_args()
+
+deform_pt, contact_pt, contact_force = load_mat(args.infile + '_deformed.mat')
+orig_pt, _, _ = load_mat(args.infile + '_orig.mat')
 
 T, distances, iterations = icp.icp(orig_pt, deform_pt, max_iterations=20, tolerance=0.0001)
 orig_pt_homo = np.ones((orig_pt.shape[0], 4))
@@ -51,7 +101,7 @@ orig_pt_icp = np.dot(T, orig_pt_homo.T).T
 orig_pt_icp = orig_pt_icp[:, :3]
 
 shifted_pt = np.array(deform_pt)
-shifted_pt[:, 0] += 1
+#shifted_pt[:, 0] += 1
 faces = np.arange(deform_pt.shape[0]).reshape(-1, 3)
 mesh_deform = trimesh.Trimesh(vertices=shifted_pt, faces=faces, process=False)
 mesh_force = trimesh.Trimesh(vertices=orig_pt, faces=faces, process=False)
@@ -77,15 +127,16 @@ normalized_force = np.power(force_pt / force_pt.max(), 0.2)
 mesh_force.visual.vertex_colors = trimesh.visual.interpolate(normalized_force, color_map='viridis') 
 
 vis_list = []
-#vis_list.append(mesh_force)
+vis_list.append(mesh_force)
 vis_list.append(mesh_deform)
-trimesh.Scene(vis_list).show()
+#trimesh.Scene(vis_list).show()
 
-fig = plt.figure()
-ax = fig.gca(projection='3d')
+render_mesh(mesh_force, args.infile + "_force_")
+render_mesh(mesh_deform, args.infile + "_deform_")
 
-ax.plot_trisurf(deform_pt[:, 0], deform_pt[:, 1], deform_pt[:, 2], triangles=faces, linewidth=0.2, antialiased=True)
-ax.plot_trisurf(orig_pt_icp[:, 0], orig_pt_icp[:, 1], orig_pt_icp[:, 2], triangles=faces, linewidth=0.2, antialiased=True)
-#ax.plot_trisurf(orig_pt[:, 0], orig_pt[:, 1], orig_pt[:, 2], triangles=faces, linewidth=0.2, antialiased=True)
-
-#plt.show()
+# fig = plt.figure()
+# ax = fig.gca(projection='3d')
+# ax.plot_trisurf(deform_pt[:, 0], deform_pt[:, 1], deform_pt[:, 2], triangles=faces, linewidth=0.2, antialiased=True)
+# ax.plot_trisurf(orig_pt_icp[:, 0], orig_pt_icp[:, 1], orig_pt_icp[:, 2], triangles=faces, linewidth=0.2, antialiased=True)
+# ax.plot_trisurf(orig_pt[:, 0], orig_pt[:, 1], orig_pt[:, 2], triangles=faces, linewidth=0.2, antialiased=True)
+# plt.show()
