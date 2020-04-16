@@ -1,6 +1,5 @@
 .vscode/*
 *.code-workspace
-mesh/
 output/
 
 # Byte-compiled / optimized / DLL files
