@@ -83,7 +83,8 @@ for idx in set(vertex_to_joint):
   #print(T2xyzrpy(np.linalg.inv(m.A_global[idx])))
   #print('cum XYZ rpy', T2xyzrpy(joints_cum_tform[idx, :, :]))
   prefix = '$J{}_'.format(idx)
-  lookup_dict[prefix+'INVGLO'] = T2xyzrpy(np.linalg.inv(m.A_global[idx]))
+  #lookup_dict[prefix+'INVGLO'] = T2xyzrpy(np.linalg.inv(m.A_global[idx]))
+  lookup_dict[prefix+'INVGLO'] = T2xyzrpy(np.eye(4))
   lookup_dict[prefix+'FWDREL'] = T2xyzrpy(tform_relative[idx, :, :])
 
   if idx >= 1:
@@ -96,6 +97,10 @@ for idx in set(vertex_to_joint):
   joint_faces = faces[faces_in_joint, :]
 
   mesh = trimesh.Trimesh(vertices=vertices, faces=joint_faces)
+  mesh_tform = trimesh.transformations.identity_matrix()
+  mesh_tform[:,:] = np.linalg.inv(m.A_global[idx])
+  mesh.apply_transform(mesh_tform)
+
   wtight = mesh_repair.fill_holes(mesh)
   joint_file = os.path.abspath('mesh/joint_' + str(idx) + '.stl')
   mesh.export(joint_file)
