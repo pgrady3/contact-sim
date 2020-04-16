@@ -9,7 +9,8 @@ import argparse
 
 def parse_args():
   parser = argparse.ArgumentParser(description='Contact visualization')
-  parser.add_argument('--infile', default='output/test1', type=str, help='Input filename')
+  parser.add_argument('--folder', default='output/', type=str, help='Input folder')
+  parser.add_argument('--infile', default='test1', type=str, help='Input filename')
   args = parser.parse_args()
 
   return args
@@ -38,6 +39,7 @@ def load_mat(filename):
     pos = mat_content['pos']
     rot = mat_content['rot']
     print(pos, rot)
+    hand_state = mat_content['handState']
 
     pt = np.stack((x, y, z)).T
     contact_pt = np.stack((contX, contY, contZ)).T
@@ -47,7 +49,7 @@ def load_mat(filename):
     pt -= pos
     contact_pt -= pos
 
-    return pt, contact_pt, contact_force
+    return pt, contact_pt, contact_force, hand_state
 
 def render_mesh(mesh, fileprefix):
 
@@ -91,8 +93,8 @@ def render_mesh(mesh, fileprefix):
 
 args = parse_args()
 
-deform_pt, contact_pt, contact_force = load_mat(args.infile + '_deformed.mat')
-orig_pt, _, _ = load_mat(args.infile + '_orig.mat')
+deform_pt, contact_pt, contact_force, hand_state = load_mat(args.folder + args.infile + '_deformed.mat')
+orig_pt, _, _, _ = load_mat(args.folder + args.infile + '_orig.mat')
 
 T, distances, iterations = icp.icp(orig_pt, deform_pt, max_iterations=20, tolerance=0.0001)
 orig_pt_homo = np.ones((orig_pt.shape[0], 4))
@@ -111,7 +113,7 @@ dist_pt = dist_pt - dist_pt.mean()
 dist_pt = dist_pt.clip(min=0)
 dist_pt = dist_pt + dist_pt.min()
 
-normalized_deform = np.power(dist_pt / dist_pt.max(), 0.4)
+normalized_deform = np.power(dist_pt / dist_pt.max(), 0.3)
 mesh_deform.visual.vertex_colors = trimesh.visual.interpolate(normalized_deform, color_map='viridis') 
 
 force_pt = np.zeros(dist_pt.shape)
@@ -127,12 +129,35 @@ normalized_force = np.power(force_pt / force_pt.max(), 0.2)
 mesh_force.visual.vertex_colors = trimesh.visual.interpolate(normalized_force, color_map='viridis') 
 
 vis_list = []
-vis_list.append(mesh_force)
+#vis_list.append(mesh_force)
 vis_list.append(mesh_deform)
-#trimesh.Scene(vis_list).show()
+trimesh.Scene(vis_list).show()
 
-render_mesh(mesh_force, args.infile + "_force_")
-render_mesh(mesh_deform, args.infile + "_deform_")
+path = args.folder + "force_" + args.infile
+render_mesh(mesh_force, path)
+path = args.folder + "deform_" + args.infile
+render_mesh(mesh_deform, path)
+
+# hand_meshes = []
+
+# for i in range(hand_state.shape[0]):
+#     filename = str('urdf/mesh/joint_{}.stl'.format(i))
+#     mesh = trimesh.load(filename)
+#     hand_meshes.append(mesh)
+#     quat = np.zeros(4)
+#     quat[1:] = hand_state[i, 3:6]
+#     quat[0] = hand_state[i, 6]
+
+#     Rq = trimesh.transformations.quaternion_matrix(quat)
+#     T = trimesh.transformations.translation_matrix(hand_state[i, :3] / 16)
+#     Rq[:3, 3] = hand_state[i, :3] / 32
+#     #print(hand_state[i, :3])
+#     mesh.apply_transform(Rq)
+#     #mesh.apply_transform(T)
+    
+    
+
+# trimesh.Scene(hand_meshes).show()
 
 # fig = plt.figure()
 # ax = fig.gca(projection='3d')

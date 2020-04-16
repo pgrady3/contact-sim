@@ -15,7 +15,7 @@ def parse_args():
   parser.add_argument('--nogui', action='store_true', help='Disable GUI')
   parser.add_argument('--pos', default="[0,0,0]", type=str, help='Starting position of hand')
   parser.add_argument('--euler', default="[0,0,0]", type=str, help='Starting euler rotation of hand')
-  parser.add_argument('--iter', default=1000, type=int, help='Number of iterations before termination')
+  parser.add_argument('--iter', default=1500, type=int, help='Number of iterations before termination')
   parser.add_argument('--force', default=10, type=float, help='Hand closing force')
   parser.add_argument('--vec', action='store_true', help='Draw force vectors')
   parser.add_argument('--outfile', default='test', type=str, help='Output filename')
@@ -31,12 +31,14 @@ def parse_args():
 
   return args
 
-def save_model(filename, softId):
+def save_model(filename, softId, handId):
   print('Saving', filename)
 
+  hand_state = get_hand_state(handId)
   softPos, softRot = p.getBasePositionAndOrientation(softId)
   x0, y0, z0, x1, y1, z1, x2, y2, z2, contX, contY, contZ, contForceX, contForceY, contForceZ = p.getSoftBodyData(softId)
-  save_dict = {'pos':softPos, 'rot':softRot, 'x0':x0,'y0':y0,'z0':z0,'x1':x1,'y1':y1,'z1':z1,'x2':x2,'y2':y2,'z2':z2, 'contX':contX, 'contY':contY, 'contZ':contZ, 'contForceX':contForceX, 'contForceY':contForceY, 'contForceZ':contForceZ}
+  save_dict = {'pos':softPos, 'rot':softRot, 'x0':x0,'y0':y0,'z0':z0,'x1':x1,'y1':y1,'z1':z1,'x2':x2,'y2':y2,'z2':z2, 
+              'contX':contX, 'contY':contY, 'contZ':contZ, 'contForceX':contForceX, 'contForceY':contForceY, 'contForceZ':contForceZ, 'handState':hand_state}
   scipy.io.savemat(filename, save_dict)
 
 def gen_img(view_matrix, im_width, im_height):
@@ -71,19 +73,31 @@ def save_img(filename, im_width=500, im_height=500):
   pil_im = Image.fromarray(rgb_save.astype(np.uint8))
   pil_im.save(args.outfile + '_vis.png')
 
+def get_hand_state(handId):
+  handState = np.zeros((p.getNumJoints(handId) + 1, 7))
+
+  pos, orn = p.getBasePositionAndOrientation(handId)
+  handState[0, :] = np.hstack((pos, orn))
+  for i in range(0, p.getNumJoints(handId)):
+    state = p.getLinkState(handId, i, computeForwardKinematics=True)
+    pos = state[0]
+    orn = state[1]
+    handState[i+1, :] = np.hstack((pos, orn))
+
+  return handState
 
 args = parse_args()
 
 if args.allegro:
-  initial_velo = [0, 1, 1, 1, 0, # Pinky 
-              0, 1, 1, 1, 0, # Middle
-              0, 1, 1, 1, 0, # Index
-              3, 0, 0, 1, 0] # Thumb
+  initial_velo = [0, 1, 1, 0.2, 0, # Pinky 
+              0, 1, 1, 1, 0.2, # Middle
+              0, 1, 1, 0.2, 0, # Index
+              3, 0, 0, 0.2, 0] # Thumb
 
-  velo_joint = [0, 1, 1, 1, 0, # Pinky 
-              0, 1, 1, 1, 0, # Middle
-              0, 1, 1, 1, 0, # Index
-              3, 0, 0, 1, 0] # Thumb
+  velo_joint = [0, 1, 1, 0.2, 0, # Pinky 
+              0, 1, 1, 0.2, 0, # Middle
+              0, 1, 1, 0.2, 0, # Index
+              3, 0, 1, 0.2, 0] # Thumb
 else:
   initial_velo = [0, 0, 0, #index
                 0, 0, 0, #middle
@@ -99,18 +113,20 @@ else:
 
 
 physicsClient = p.connect(p.GUI)
-
+p.setTimeStep(0.002) # Increase to 1000 Hz, up from 240
 p.configureDebugVisualizer(p.COV_ENABLE_RENDERING, 0)
+p.configureDebugVisualizer(p.COV_ENABLE_GUI, 0)
+p.resetDebugVisualizerCamera(3, 230, 0, [0,0,0])
 p.resetSimulation(p.RESET_USE_DEFORMABLE_WORLD)
 p.setPhysicsEngineParameter(sparseSdfVoxelSize=0.025)
 p.setRealTimeSimulation(0)
-p.setGravity(0, 0, 10)
+p.setGravity(0, 0, 40)
 
 softId = p.loadSoftBody(args.file, [0, 0, 0], mass=1,
                       useNeoHookean = 0, NeoHookeanMu = 60, NeoHookeanLambda = 200, NeoHookeanDamping = 0.01,
                       useSelfCollision = 0,
                       frictionCoeff = 0.5, 
-                      springElasticStiffness=50, springDampingStiffness=5, springBendingStiffness=5, 
+                      springElasticStiffness=args.elastic, springDampingStiffness=args.damping, springBendingStiffness=args.bending, 
                       useMassSpring=1, useBendingSprings=1, collisionMargin=0.005)
 p.changeVisualShape(softId, 1, rgbaColor=[0, 0, 1, 1.0])
 
@@ -136,6 +152,8 @@ if args.vec:
       line_id = p.addUserDebugLine([0,0,0], [0,0,0])
       debug_lines.append(line_id)
 
+
+# time.sleep(5)
 sim_ticks = 0
 start_time = time.time()
 while p.isConnected() and sim_ticks < args.iter:
@@ -161,14 +179,14 @@ while p.isConnected() and sim_ticks < args.iter:
   save_key = ord('z')
   keys = p.getKeyboardEvents()
   if save_key in keys and keys[save_key]&p.KEY_WAS_TRIGGERED:
-    save_model(args.outfile + '_deformed.mat', softId)
+    save_model(args.outfile + '_deformed.mat', softId, handId)
 
   if sim_ticks == 2:
-    save_model(args.outfile + '_orig.mat', softId)
+    save_model(args.outfile + '_orig.mat', softId, handId)
 
   p.stepSimulation()
   sim_ticks += 1
 
-save_model(args.outfile + '_deformed.mat', softId)
+save_model(args.outfile + '_deformed.mat', softId, handId)
 print('Runtime: ', time.time() - start_time, ' sec')
 save_img(args.outfile)
