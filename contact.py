@@ -83,6 +83,8 @@ def get_hand_state(handId):
     pos = state[0]
     orn = state[1]
     handState[i+1, :] = np.hstack((pos, orn))
+    dyn = p.getDynamicsInfo(handId, i)
+    #print(dyn)
 
   return handState
 
@@ -153,7 +155,7 @@ if args.vec:
       debug_lines.append(line_id)
 
 
-# time.sleep(5)
+save_model(args.outfile + '_orig.mat', softId, handId)
 sim_ticks = 0
 start_time = time.time()
 while p.isConnected() and sim_ticks < args.iter:
@@ -180,9 +182,6 @@ while p.isConnected() and sim_ticks < args.iter:
   keys = p.getKeyboardEvents()
   if save_key in keys and keys[save_key]&p.KEY_WAS_TRIGGERED:
     save_model(args.outfile + '_deformed.mat', softId, handId)
-
-  if sim_ticks == 2:
-    save_model(args.outfile + '_orig.mat', softId, handId)
 
   p.stepSimulation()
   sim_ticks += 1

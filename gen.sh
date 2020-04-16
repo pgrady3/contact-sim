@@ -58,7 +58,7 @@ conda activate contact
 # #python vis.py  --folder="output/" --infile="boot"
 
 python contact.py --file data/ball.vtk --euler="[1.57, 0.4, 0]" --pos="[1.1, 0, 1.3]" --outfile="output/ball" --elastic 50 --damping 5 --bending 0.5
-#python vis.py  --folder="output/" --infile="ball"
+python vis.py  --folder="output/" --infile="ball"
 
 # python contact.py --file data/bread.vtk --euler="[1.57, 0.2, 0]" --pos="[1.1, 0, 1.3]" --outfile="output/bread" --elastic 50 --damping 5 --bending 0.05
 # #python vis.py  --folder="output/" --infile="bread"

@@ -69,27 +69,16 @@ def render_mesh(mesh, fileprefix):
 
     scene = trimesh.Scene(mesh_list)
 
-    for i in range(1):
-        #camera_old, _geometry = scene.graph[scene.camera.name]
-        #camera_new = np.dot(camera_old, rotate)
-        #scene.graph[scene.camera.name] = camera_new
-        #rotate = trimesh.transformations.rotation_matrix(angle=np.radians(60.0 * i), direction=[0, 1, 0], point=scene.centroid)
-        
-        #fov = np.array([20, 50])
-        #transform = trimesh.scene.cameras.look_at(mesh.vertices, fov, rotation=rotate)
-        #print(transform)
-        #scene.graph[scene.camera.name] = transform
+    try:
+        # increment the file name
+        file_name = fileprefix + '.png'
+        png = scene.save_image(resolution=[1920, 1080], visible=True)
+        with open(file_name, 'wb') as f:
+            f.write(png)
+            f.close()
 
-        try:
-            # increment the file name
-            file_name = fileprefix + '_' + str(i) + '.png'
-            png = scene.save_image(resolution=[1920, 1080], visible=True)
-            with open(file_name, 'wb') as f:
-                f.write(png)
-                f.close()
-
-        except BaseException as E:
-            print("unable to save image", str(E))
+    except BaseException as E:
+        print("unable to save image", str(E))
 
 args = parse_args()
 
@@ -131,33 +120,36 @@ mesh_force.visual.vertex_colors = trimesh.visual.interpolate(normalized_force, c
 vis_list = []
 #vis_list.append(mesh_force)
 vis_list.append(mesh_deform)
-trimesh.Scene(vis_list).show()
+#trimesh.Scene(vis_list).show()
 
 path = args.folder + "force_" + args.infile
 render_mesh(mesh_force, path)
 path = args.folder + "deform_" + args.infile
 render_mesh(mesh_deform, path)
 
-# hand_meshes = []
+hand_meshes = []
 
-# for i in range(hand_state.shape[0]):
-#     filename = str('urdf/mesh/joint_{}.stl'.format(i))
-#     mesh = trimesh.load(filename)
-#     hand_meshes.append(mesh)
-#     quat = np.zeros(4)
-#     quat[1:] = hand_state[i, 3:6]
-#     quat[0] = hand_state[i, 6]
+for i in range(hand_state.shape[0]):
+    filename = str('urdf/mesh/joint_{}.stl'.format(i))
+    mesh = trimesh.load(filename)
+    mesh = trimesh.Trimesh(vertices=mesh.vertices * 16, faces=mesh.faces)
+    hand_meshes.append(mesh)
+    quat = np.zeros(4)
+    quat[1:] = hand_state[i, 3:6]
+    quat[0] = hand_state[i, 6]
+    trans = hand_state[i, :3]
 
-#     Rq = trimesh.transformations.quaternion_matrix(quat)
-#     T = trimesh.transformations.translation_matrix(hand_state[i, :3] / 16)
-#     Rq[:3, 3] = hand_state[i, :3] / 32
-#     #print(hand_state[i, :3])
-#     mesh.apply_transform(Rq)
-#     #mesh.apply_transform(T)
+    Rq = trimesh.transformations.quaternion_matrix(quat)
+    Rq[:3, 3] = trans
+    mesh.apply_transform(Rq)
+
+    #T = trimesh.transformations.translation_matrix(trans)
+    #mesh.apply_transform(T)
     
-    
-
-# trimesh.Scene(hand_meshes).show()
+vis_list = []
+vis_list.extend(hand_meshes)
+vis_list.append(mesh_deform)
+trimesh.Scene(vis_list).show()
 
 # fig = plt.figure()
 # ax = fig.gca(projection='3d')
