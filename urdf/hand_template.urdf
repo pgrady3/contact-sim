@@ -169,77 +169,6 @@
     </collision>
   </link>
 
-  <!-- RING FINGER ************************************************************************************** -->
-
-  <joint name="palm_to_ring_1" type="revolute">
-    <parent link="base_link"/>
-    <child link="ring_1"/>
-    <limit effort="1000.0" lower="-1" upper="1" velocity="0.5"/>
-    <origin $J10_FWDREL/> <!-- fwd relative-->
-    <axis $J10_AX/>
-  </joint>
-
-  <link name="ring_1">
-    <visual>
-      <geometry>
-        <mesh filename="$J10_FILE" scale="1 1 1"/>
-      </geometry>
-      <origin $J10_INVGLO/> <!-- inverse global -->
-    </visual>
-    <collision>
-      <geometry>
-        <mesh filename="$J10_FILE" scale="1 1 1"/>
-      </geometry>
-      <origin $J10_INVGLO/> <!-- inverse global -->
-    </collision>
-  </link>
-
-  <joint name="ring_1_to_ring_2" type="revolute">
-    <parent link="ring_1"/>
-    <child link="ring_2"/>
-    <limit effort="1000.0" lower="-1" upper="1" velocity="0.5"/>
-    <origin $J11_FWDREL/> <!-- fwd relative-->
-    <axis $J11_AX/>
-  </joint>
-
-  <link name="ring_2">
-    <visual>
-      <geometry>
-        <mesh filename="$J11_FILE" scale="1 1 1"/>
-      </geometry>
-      <origin $J11_INVGLO/> <!-- inverse global -->
-    </visual>
-    <collision>
-      <geometry>
-        <mesh filename="$J11_FILE" scale="1 1 1"/>
-      </geometry>
-      <origin $J11_INVGLO/> <!-- inverse global -->
-    </collision>
-  </link>
-
-  <joint name="ring_2_to_ring_3" type="revolute">
-    <parent link="ring_2"/>
-    <child link="ring_3"/>
-    <limit effort="1000.0" lower="-1" upper="1" velocity="0.5"/>
-    <origin $J12_FWDREL/> <!-- fwd relative-->
-    <axis $J12_AX/>
-  </joint>
-
-  <link name="ring_3">
-    <visual>
-      <geometry>
-        <mesh filename="$J12_FILE" scale="1 1 1"/>
-      </geometry>
-      <origin $J12_INVGLO/> <!-- inverse global -->
-    </visual>
-    <collision>
-      <geometry>
-        <mesh filename="$J12_FILE" scale="1 1 1"/>
-      </geometry>
-      <origin $J12_INVGLO/> <!-- inverse global -->
-    </collision>
-  </link>
-
   <!-- PINKY FINGER ************************************************************************************** -->
 
   <joint name="palm_to_pinky_1" type="revolute">
@@ -308,6 +237,77 @@
         <mesh filename="$J9_FILE" scale="1 1 1"/>
       </geometry>
       <origin $J9_INVGLO/> <!-- inverse global -->
+    </collision>
+  </link>
+
+  <!-- RING FINGER ************************************************************************************** -->
+
+  <joint name="palm_to_ring_1" type="revolute">
+    <parent link="base_link"/>
+    <child link="ring_1"/>
+    <limit effort="1000.0" lower="-1" upper="1" velocity="0.5"/>
+    <origin $J10_FWDREL/> <!-- fwd relative-->
+    <axis $J10_AX/>
+  </joint>
+
+  <link name="ring_1">
+    <visual>
+      <geometry>
+        <mesh filename="$J10_FILE" scale="1 1 1"/>
+      </geometry>
+      <origin $J10_INVGLO/> <!-- inverse global -->
+    </visual>
+    <collision>
+      <geometry>
+        <mesh filename="$J10_FILE" scale="1 1 1"/>
+      </geometry>
+      <origin $J10_INVGLO/> <!-- inverse global -->
+    </collision>
+  </link>
+
+  <joint name="ring_1_to_ring_2" type="revolute">
+    <parent link="ring_1"/>
+    <child link="ring_2"/>
+    <limit effort="1000.0" lower="-1" upper="1" velocity="0.5"/>
+    <origin $J11_FWDREL/> <!-- fwd relative-->
+    <axis $J11_AX/>
+  </joint>
+
+  <link name="ring_2">
+    <visual>
+      <geometry>
+        <mesh filename="$J11_FILE" scale="1 1 1"/>
+      </geometry>
+      <origin $J11_INVGLO/> <!-- inverse global -->
+    </visual>
+    <collision>
+      <geometry>
+        <mesh filename="$J11_FILE" scale="1 1 1"/>
+      </geometry>
+      <origin $J11_INVGLO/> <!-- inverse global -->
+    </collision>
+  </link>
+
+  <joint name="ring_2_to_ring_3" type="revolute">
+    <parent link="ring_2"/>
+    <child link="ring_3"/>
+    <limit effort="1000.0" lower="-1" upper="1" velocity="0.5"/>
+    <origin $J12_FWDREL/> <!-- fwd relative-->
+    <axis $J12_AX/>
+  </joint>
+
+  <link name="ring_3">
+    <visual>
+      <geometry>
+        <mesh filename="$J12_FILE" scale="1 1 1"/>
+      </geometry>
+      <origin $J12_INVGLO/> <!-- inverse global -->
+    </visual>
+    <collision>
+      <geometry>
+        <mesh filename="$J12_FILE" scale="1 1 1"/>
+      </geometry>
+      <origin $J12_INVGLO/> <!-- inverse global -->
     </collision>
   </link>
 

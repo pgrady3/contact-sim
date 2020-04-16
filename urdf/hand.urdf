@@ -169,77 +169,6 @@
     </collision>
   </link>
 
-  <!-- RING FINGER ************************************************************************************** -->
-
-  <joint name="palm_to_ring_1" type="revolute">
-    <parent link="base_link"/>
-    <child link="ring_1"/>
-    <limit effort="1000.0" lower="-1" upper="1" velocity="0.5"/>
-    <origin xyz="-0.0817 -0.0040 -0.0267" rpy="0.0000 0.0000 0.0000"/> <!-- fwd relative-->
-    <axis xyz="-0.3497 0.1281 0.9281"/>
-  </joint>
-
-  <link name="ring_1">
-    <visual>
-      <geometry>
-        <mesh filename="/home/patrick/contact/contact-sim/urdf/mesh/joint_10.stl" scale="1 1 1"/>
-      </geometry>
-      <origin xyz="0.0000 0.0000 0.0000" rpy="0.0000 0.0000 0.0000"/> <!-- inverse global -->
-    </visual>
-    <collision>
-      <geometry>
-        <mesh filename="/home/patrick/contact/contact-sim/urdf/mesh/joint_10.stl" scale="1 1 1"/>
-      </geometry>
-      <origin xyz="0.0000 0.0000 0.0000" rpy="0.0000 0.0000 0.0000"/> <!-- inverse global -->
-    </collision>
-  </link>
-
-  <joint name="ring_1_to_ring_2" type="revolute">
-    <parent link="ring_1"/>
-    <child link="ring_2"/>
-    <limit effort="1000.0" lower="-1" upper="1" velocity="0.5"/>
-    <origin xyz="-0.0283 0.0021 -0.0051" rpy="0.0000 0.0000 0.0000"/> <!-- fwd relative-->
-    <axis xyz="-0.4653 0.2350 0.8534"/>
-  </joint>
-
-  <link name="ring_2">
-    <visual>
-      <geometry>
-        <mesh filename="/home/patrick/contact/contact-sim/urdf/mesh/joint_11.stl" scale="1 1 1"/>
-      </geometry>
-      <origin xyz="0.0000 0.0000 0.0000" rpy="0.0000 0.0000 0.0000"/> <!-- inverse global -->
-    </visual>
-    <collision>
-      <geometry>
-        <mesh filename="/home/patrick/contact/contact-sim/urdf/mesh/joint_11.stl" scale="1 1 1"/>
-      </geometry>
-      <origin xyz="0.0000 0.0000 0.0000" rpy="0.0000 0.0000 0.0000"/> <!-- inverse global -->
-    </collision>
-  </link>
-
-  <joint name="ring_2_to_ring_3" type="revolute">
-    <parent link="ring_2"/>
-    <child link="ring_3"/>
-    <limit effort="1000.0" lower="-1" upper="1" velocity="0.5"/>
-    <origin xyz="-0.0235 -0.0017 -0.0076" rpy="0.0000 0.0000 0.0000"/> <!-- fwd relative-->
-    <axis xyz="-0.2219 -0.0481 0.9739"/>
-  </joint>
-
-  <link name="ring_3">
-    <visual>
-      <geometry>
-        <mesh filename="/home/patrick/contact/contact-sim/urdf/mesh/joint_12.stl" scale="1 1 1"/>
-      </geometry>
-      <origin xyz="0.0000 0.0000 0.0000" rpy="0.0000 0.0000 0.0000"/> <!-- inverse global -->
-    </visual>
-    <collision>
-      <geometry>
-        <mesh filename="/home/patrick/contact/contact-sim/urdf/mesh/joint_12.stl" scale="1 1 1"/>
-      </geometry>
-      <origin xyz="0.0000 0.0000 0.0000" rpy="0.0000 0.0000 0.0000"/> <!-- inverse global -->
-    </collision>
-  </link>
-
   <!-- PINKY FINGER ************************************************************************************** -->
 
   <joint name="palm_to_pinky_1" type="revolute">
@@ -306,6 +235,77 @@
     <collision>
       <geometry>
         <mesh filename="/home/patrick/contact/contact-sim/urdf/mesh/joint_9.stl" scale="1 1 1"/>
+      </geometry>
+      <origin xyz="0.0000 0.0000 0.0000" rpy="0.0000 0.0000 0.0000"/> <!-- inverse global -->
+    </collision>
+  </link>
+
+  <!-- RING FINGER ************************************************************************************** -->
+
+  <joint name="palm_to_ring_1" type="revolute">
+    <parent link="base_link"/>
+    <child link="ring_1"/>
+    <limit effort="1000.0" lower="-1" upper="1" velocity="0.5"/>
+    <origin xyz="-0.0817 -0.0040 -0.0267" rpy="0.0000 0.0000 0.0000"/> <!-- fwd relative-->
+    <axis xyz="-0.3497 0.1281 0.9281"/>
+  </joint>
+
+  <link name="ring_1">
+    <visual>
+      <geometry>
+        <mesh filename="/home/patrick/contact/contact-sim/urdf/mesh/joint_10.stl" scale="1 1 1"/>
+      </geometry>
+      <origin xyz="0.0000 0.0000 0.0000" rpy="0.0000 0.0000 0.0000"/> <!-- inverse global -->
+    </visual>
+    <collision>
+      <geometry>
+        <mesh filename="/home/patrick/contact/contact-sim/urdf/mesh/joint_10.stl" scale="1 1 1"/>
+      </geometry>
+      <origin xyz="0.0000 0.0000 0.0000" rpy="0.0000 0.0000 0.0000"/> <!-- inverse global -->
+    </collision>
+  </link>
+
+  <joint name="ring_1_to_ring_2" type="revolute">
+    <parent link="ring_1"/>
+    <child link="ring_2"/>
+    <limit effort="1000.0" lower="-1" upper="1" velocity="0.5"/>
+    <origin xyz="-0.0283 0.0021 -0.0051" rpy="0.0000 0.0000 0.0000"/> <!-- fwd relative-->
+    <axis xyz="-0.4653 0.2350 0.8534"/>
+  </joint>
+
+  <link name="ring_2">
+    <visual>
+      <geometry>
+        <mesh filename="/home/patrick/contact/contact-sim/urdf/mesh/joint_11.stl" scale="1 1 1"/>
+      </geometry>
+      <origin xyz="0.0000 0.0000 0.0000" rpy="0.0000 0.0000 0.0000"/> <!-- inverse global -->
+    </visual>
+    <collision>
+      <geometry>
+        <mesh filename="/home/patrick/contact/contact-sim/urdf/mesh/joint_11.stl" scale="1 1 1"/>
+      </geometry>
+      <origin xyz="0.0000 0.0000 0.0000" rpy="0.0000 0.0000 0.0000"/> <!-- inverse global -->
+    </collision>
+  </link>
+
+  <joint name="ring_2_to_ring_3" type="revolute">
+    <parent link="ring_2"/>
+    <child link="ring_3"/>
+    <limit effort="1000.0" lower="-1" upper="1" velocity="0.5"/>
+    <origin xyz="-0.0235 -0.0017 -0.0076" rpy="0.0000 0.0000 0.0000"/> <!-- fwd relative-->
+    <axis xyz="-0.2219 -0.0481 0.9739"/>
+  </joint>
+
+  <link name="ring_3">
+    <visual>
+      <geometry>
+        <mesh filename="/home/patrick/contact/contact-sim/urdf/mesh/joint_12.stl" scale="1 1 1"/>
+      </geometry>
+      <origin xyz="0.0000 0.0000 0.0000" rpy="0.0000 0.0000 0.0000"/> <!-- inverse global -->
+    </visual>
+    <collision>
+      <geometry>
+        <mesh filename="/home/patrick/contact/contact-sim/urdf/mesh/joint_12.stl" scale="1 1 1"/>
       </geometry>
       <origin xyz="0.0000 0.0000 0.0000" rpy="0.0000 0.0000 0.0000"/> <!-- inverse global -->
     </collision>
