@@ -15,7 +15,7 @@ def parse_args():
 
   return args
 
-def load_mat(filename):
+def load_mat(filename, normalize=True):
     mat_content = scipy.io.loadmat(filename, squeeze_me=True)
     x0 = mat_content['x0']
     y0 = mat_content['y0']
@@ -46,8 +46,9 @@ def load_mat(filename):
     contact_force_3d = np.stack((contForceX, contForceY, contForceZ)).T
     contact_force = np.linalg.norm(contact_force_3d, axis=1)
 
-    pt -= pos
-    contact_pt -= pos
+    if normalize:
+        pt -= pos
+        contact_pt -= pos
 
     return pt, contact_pt, contact_force, hand_state
 
@@ -84,18 +85,18 @@ args = parse_args()
 
 deform_pt, contact_pt, contact_force, hand_state = load_mat(args.folder + args.infile + '_deformed.mat')
 orig_pt, _, _, _ = load_mat(args.folder + args.infile + '_orig.mat')
+deform_pt_notrans, _, _, _ = load_mat(args.folder + args.infile + '_deformed.mat', normalize=False)
 
-T, distances, iterations = icp.icp(orig_pt, deform_pt, max_iterations=20, tolerance=0.0001)
+faces = np.arange(deform_pt.shape[0]).reshape(-1, 3)
+mesh_deform = trimesh.Trimesh(vertices=deform_pt, faces=faces, process=False)
+mesh_deform_notrans = trimesh.Trimesh(vertices=deform_pt_notrans, faces=faces, process=False)
+mesh_force = trimesh.Trimesh(vertices=orig_pt, faces=faces, process=False)
+
+T, distances, iterations = icp.icp(orig_pt, deform_pt, max_iterations=20, tolerance=0.0001) # modified to not do nearest neighbor search
 orig_pt_homo = np.ones((orig_pt.shape[0], 4))
 orig_pt_homo[:, :3] = orig_pt
 orig_pt_icp = np.dot(T, orig_pt_homo.T).T
 orig_pt_icp = orig_pt_icp[:, :3]
-
-shifted_pt = np.array(deform_pt)
-#shifted_pt[:, 0] += 1
-faces = np.arange(deform_pt.shape[0]).reshape(-1, 3)
-mesh_deform = trimesh.Trimesh(vertices=shifted_pt, faces=faces, process=False)
-mesh_force = trimesh.Trimesh(vertices=orig_pt, faces=faces, process=False)
 
 dist_pt = np.linalg.norm(deform_pt - orig_pt_icp, axis=1)
 dist_pt = dist_pt - dist_pt.mean()
@@ -104,6 +105,7 @@ dist_pt = dist_pt + dist_pt.min()
 
 normalized_deform = np.power(dist_pt / dist_pt.max(), 0.3)
 mesh_deform.visual.vertex_colors = trimesh.visual.interpolate(normalized_deform, color_map='viridis') 
+mesh_deform_notrans.visual.vertex_colors = trimesh.visual.interpolate(normalized_deform, color_map='viridis') 
 
 force_pt = np.zeros(dist_pt.shape)
 for i in range(contact_pt.shape[0]):
@@ -148,7 +150,7 @@ for i in range(hand_state.shape[0]):
     
 vis_list = []
 vis_list.extend(hand_meshes)
-vis_list.append(mesh_deform)
+vis_list.append(mesh_deform_notrans)
 trimesh.Scene(vis_list).show()
 
 # fig = plt.figure()
