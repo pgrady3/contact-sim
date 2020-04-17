@@ -136,15 +136,16 @@ mesh_unnormalized = trimesh.Trimesh(vertices=deform_pt_notrans, faces=faces, pro
 mesh_distance = subdivide_mesh(mesh_unnormalized)
 
 dist_to_hand = np.zeros(mesh_distance.vertices.shape[0]) + 1000
+mesh_verts_offset = np.array(mesh_distance.vertices) + mesh_distance.vertex_normals * 0.05
+
 
 hand_meshes = []
-
-
 for i in range(hand_state.shape[0]):
     filename = str('urdf/mesh/joint_{}.stl'.format(i))
-    mesh = trimesh.load(filename)
-    mesh = trimesh.Trimesh(vertices=mesh.vertices * 16, faces=mesh.faces)
-    hand_meshes.append(mesh)
+    mesh_finger = trimesh.load(filename)
+    mesh_finger = trimesh.Trimesh(vertices=mesh_finger.vertices * 16, faces=mesh_finger.faces)
+    mesh_finger.visual.face_colors = [200, 200, 250, 100]
+    hand_meshes.append(mesh_finger)
     quat = np.zeros(4)
     quat[1:] = hand_state[i, 3:6]
     quat[0] = hand_state[i, 6]
@@ -152,16 +153,16 @@ for i in range(hand_state.shape[0]):
 
     Rq = trimesh.transformations.quaternion_matrix(quat)
     Rq[:3, 3] = trans
-    mesh.apply_transform(Rq)
+    mesh_finger.apply_transform(Rq)
 
-    d = -trimesh.proximity.signed_distance(mesh, mesh_distance.vertices)
+    d = -trimesh.proximity.signed_distance(mesh_finger, mesh_verts_offset)
     dist_to_hand = np.minimum(d, dist_to_hand)
 
     #T = trimesh.transformations.translation_matrix(trans)
     #mesh.apply_transform(T)
 
 #normalized_dist_to_hand = dist_to_hand + dist_to_hand.min()
-normalized_dist_to_hand = np.clip(dist_to_hand, 0, dist_to_hand.max() * 0.05)
+normalized_dist_to_hand = -np.clip(dist_to_hand, 0, dist_to_hand.max() * 0.05)
 
 mesh_distance.visual.vertex_colors = trimesh.visual.interpolate(normalized_dist_to_hand, color_map='viridis') 
 
