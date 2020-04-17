@@ -53,7 +53,6 @@ def load_mat(filename, normalize=True):
     return pt, contact_pt, contact_force, hand_state
 
 def render_mesh(mesh, fileprefix):
-
     mesh_list = []
     for i in range(3):
         m = mesh.copy()
@@ -81,6 +80,13 @@ def render_mesh(mesh, fileprefix):
     except BaseException as E:
         print("unable to save image", str(E))
 
+def subdivide_mesh(mesh):
+    new_vert, new_face = trimesh.remesh.subdivide(mesh.vertices, mesh.faces)
+    m_new = trimesh.Trimesh(vertices=new_vert, faces=new_face, process=True)
+
+    return m_new
+
+
 args = parse_args()
 
 deform_pt, contact_pt, contact_force, hand_state = load_mat(args.folder + args.infile + '_deformed.mat')
@@ -89,7 +95,6 @@ deform_pt_notrans, _, _, _ = load_mat(args.folder + args.infile + '_deformed.mat
 
 faces = np.arange(deform_pt.shape[0]).reshape(-1, 3)
 mesh_deform = trimesh.Trimesh(vertices=deform_pt, faces=faces, process=False)
-mesh_deform_notrans = trimesh.Trimesh(vertices=deform_pt_notrans, faces=faces, process=False)
 mesh_force = trimesh.Trimesh(vertices=orig_pt, faces=faces, process=False)
 
 T, distances, iterations = icp.icp(orig_pt, deform_pt, max_iterations=20, tolerance=0.0001) # modified to not do nearest neighbor search
@@ -105,8 +110,6 @@ dist_pt = dist_pt + dist_pt.min()
 
 normalized_deform = np.power(dist_pt / dist_pt.max(), 0.3)
 mesh_deform.visual.vertex_colors = trimesh.visual.interpolate(normalized_deform, color_map='viridis') 
-mesh_deform_notrans.visual.vertex_colors = trimesh.visual.interpolate(normalized_deform, color_map='viridis') 
-
 force_pt = np.zeros(dist_pt.shape)
 for i in range(contact_pt.shape[0]):
     dist_to_contact = np.linalg.norm(contact_pt[i, :] - deform_pt, axis=1)
@@ -129,7 +132,13 @@ render_mesh(mesh_force, path)
 path = args.folder + "deform_" + args.infile
 render_mesh(mesh_deform, path)
 
+mesh_unnormalized = trimesh.Trimesh(vertices=deform_pt_notrans, faces=faces, process=True)
+mesh_distance = subdivide_mesh(mesh_unnormalized)
+
+dist_to_hand = np.zeros(mesh_distance.vertices.shape[0]) + 1000
+
 hand_meshes = []
+
 
 for i in range(hand_state.shape[0]):
     filename = str('urdf/mesh/joint_{}.stl'.format(i))
@@ -145,12 +154,20 @@ for i in range(hand_state.shape[0]):
     Rq[:3, 3] = trans
     mesh.apply_transform(Rq)
 
+    d = -trimesh.proximity.signed_distance(mesh, mesh_distance.vertices)
+    dist_to_hand = np.minimum(d, dist_to_hand)
+
     #T = trimesh.transformations.translation_matrix(trans)
     #mesh.apply_transform(T)
-    
+
+#normalized_dist_to_hand = dist_to_hand + dist_to_hand.min()
+normalized_dist_to_hand = np.clip(dist_to_hand, 0, dist_to_hand.max() * 0.05)
+
+mesh_distance.visual.vertex_colors = trimesh.visual.interpolate(normalized_dist_to_hand, color_map='viridis') 
+
 vis_list = []
 vis_list.extend(hand_meshes)
-vis_list.append(mesh_deform_notrans)
+vis_list.append(mesh_distance)
 trimesh.Scene(vis_list).show()
 
 # fig = plt.figure()
