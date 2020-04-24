@@ -52,19 +52,19 @@ def load_mat(filename, normalize=True):
 
     return pt, contact_pt, contact_force, hand_state
 
-def render_mesh(mesh, fileprefix):
+def render_mesh(meshes, fileprefix):
     mesh_list = []
-    for i in range(3):
-        m = mesh.copy()
-        R = trimesh.transformations.rotation_matrix(i * 1.0, [1,0,1])
-        m.apply_transform(R)
-        m.apply_translation([i*2.5, 0, 0])
-        mesh_list.append(m)
+    for i in range(len(meshes)):
+        # m = meshes[i].copy()
+        # R = trimesh.transformations.rotation_matrix(0.0, [1,0,1])
+        # m.apply_transform(R)
+        # m.apply_translation([i*2.0, 0, 0])
+        # mesh_list.append(m)
 
-        m = mesh.copy()
-        R = trimesh.transformations.rotation_matrix((i+1) * 1.0, [1,1,0])
+        m = meshes[i].copy()
+        R = trimesh.transformations.rotation_matrix(1.0, [1,1,0])
         m.apply_transform(R)
-        m.apply_translation([i*2.5, 2.5, 0])
+        m.apply_translation([i*2.0, 1.5, 0])
         mesh_list.append(m)
 
     scene = trimesh.Scene(mesh_list)
@@ -89,13 +89,13 @@ def subdivide_mesh(mesh):
 
 args = parse_args()
 
-deform_pt, contact_pt, contact_force, hand_state = load_mat(args.folder + args.infile + '_deformed.mat')
-orig_pt, _, _, _ = load_mat(args.folder + args.infile + '_orig.mat')
+deform_pt, contact_pt, contact_force, hand_state = load_mat(args.folder + args.infile + '_deformed.mat', normalize=False)
+orig_pt, _, _, _ = load_mat(args.folder + args.infile + '_orig.mat', normalize=False)
 deform_pt_notrans, _, _, _ = load_mat(args.folder + args.infile + '_deformed.mat', normalize=False)
 
 faces = np.arange(deform_pt.shape[0]).reshape(-1, 3)
 mesh_deform = trimesh.Trimesh(vertices=deform_pt, faces=faces, process=False)
-mesh_force = trimesh.Trimesh(vertices=orig_pt, faces=faces, process=False)
+mesh_force = trimesh.Trimesh(vertices=deform_pt, faces=faces, process=False)
 
 T, distances, iterations = icp.icp(orig_pt, deform_pt, max_iterations=20, tolerance=0.0001) # modified to not do nearest neighbor search
 orig_pt_homo = np.ones((orig_pt.shape[0], 4))
@@ -122,15 +122,6 @@ for i in range(contact_pt.shape[0]):
 normalized_force = np.power(force_pt / force_pt.max(), 0.2)
 mesh_force.visual.vertex_colors = trimesh.visual.interpolate(normalized_force, color_map='viridis') 
 
-vis_list = []
-#vis_list.append(mesh_force)
-vis_list.append(mesh_deform)
-#trimesh.Scene(vis_list).show()
-
-path = args.folder + "force_" + args.infile
-render_mesh(mesh_force, path)
-path = args.folder + "deform_" + args.infile
-render_mesh(mesh_deform, path)
 
 mesh_unnormalized = trimesh.Trimesh(vertices=deform_pt_notrans, faces=faces, process=True)
 mesh_distance = subdivide_mesh(mesh_unnormalized)
@@ -169,7 +160,7 @@ mesh_distance.visual.vertex_colors = trimesh.visual.interpolate(normalized_dist_
 vis_list = []
 vis_list.extend(hand_meshes)
 vis_list.append(mesh_distance)
-trimesh.Scene(vis_list).show()
+# trimesh.Scene(vis_list).show()
 
 # fig = plt.figure()
 # ax = fig.gca(projection='3d')
@@ -177,3 +168,15 @@ trimesh.Scene(vis_list).show()
 # ax.plot_trisurf(orig_pt_icp[:, 0], orig_pt_icp[:, 1], orig_pt_icp[:, 2], triangles=faces, linewidth=0.2, antialiased=True)
 # ax.plot_trisurf(orig_pt[:, 0], orig_pt[:, 1], orig_pt[:, 2], triangles=faces, linewidth=0.2, antialiased=True)
 # plt.show()
+
+
+
+# vis_list = []
+# #vis_list.append(mesh_force)
+# vis_list.append(mesh_deform)
+#trimesh.Scene(vis_list).show()
+
+path = args.folder + "combo_" + args.infile
+render_mesh([mesh_force, mesh_deform, mesh_distance], path)
+# path = args.folder + "deform_" + args.infile
+# render_mesh(mesh_deform, path)

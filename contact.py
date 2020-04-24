@@ -23,11 +23,13 @@ def parse_args():
   parser.add_argument('--elastic', default=50, type=float, help='Spring Elastic Stiffness')
   parser.add_argument('--damping', default=5, type=float, help='Spring Damping Stiffness')
   parser.add_argument('--bending', default=5, type=float, help='Spring Bending Stiffness')
+  parser.add_argument('--objeuler', default="[0,0,0]", type=str, help='Starting euler rotation of object')
   
   args = parser.parse_args()
 
   args.pos = ast.literal_eval(args.pos) # Parse into list
   args.euler = ast.literal_eval(args.euler)
+  args.obj_euler = ast.literal_eval(args.objeuler)
 
   return args
 
@@ -71,7 +73,7 @@ def save_img(filename, im_width=500, im_height=500):
 
   rgb_save = rgb_all[:,:,:3] * 255.
   pil_im = Image.fromarray(rgb_save.astype(np.uint8))
-  pil_im.save(args.outfile + '_vis.png')
+  pil_im.save(filename + '_vis.png')
 
 def get_hand_state(handId):
   handState = np.zeros((p.getNumJoints(handId) + 1, 7))
@@ -111,7 +113,7 @@ else:
                 3, 0.5, 0.3, #middle
                 3, 0.5, 0.3, #ring
                 3, 0.5, 0.3, #pinky
-                3, 0.5, 0.3] #thumb
+                2, 0.5, 0.3] #thumb
 
 
 physicsClient = p.connect(p.GUI)
@@ -124,7 +126,8 @@ p.setPhysicsEngineParameter(sparseSdfVoxelSize=0.025)
 p.setRealTimeSimulation(0)
 p.setGravity(0, 0, 40)
 
-softId = p.loadSoftBody(args.file, [0, 0, 0], mass=1,
+softOrn = p.getQuaternionFromEuler(args.obj_euler)
+softId = p.loadSoftBody(args.file, [0, 0, 0], baseOrientation=softOrn, mass=1,
                       useNeoHookean = 0, NeoHookeanMu = 60, NeoHookeanLambda = 200, NeoHookeanDamping = 0.01,
                       useSelfCollision = 0,
                       frictionCoeff = 0.5, 
@@ -182,6 +185,9 @@ while p.isConnected() and sim_ticks < args.iter:
   keys = p.getKeyboardEvents()
   if save_key in keys and keys[save_key]&p.KEY_WAS_TRIGGERED:
     save_model(args.outfile + '_deformed.mat', softId, handId)
+
+  # if sim_ticks % 200 == 0:
+  #   save_img(args.outfile + str(sim_ticks))
 
   p.stepSimulation()
   sim_ticks += 1
